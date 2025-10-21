@@ -30,6 +30,15 @@ public class LancersTeleOp extends LinearOpMode {
         final DcMotor intakeMotor = hardwareMap.dcMotor.get(LancersBotConfig.INTAKE_MOTOR);
         rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        //outtake
+        final DcMotor outtakeMotor = hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR);
+        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        final Servo outtakeServo = hardwareMap.servo.get(LancersBotConfig.OUTTAKE_SERVO);
+
+
+
+
         //DcMotorEx inherits from DcMotor class,
         //DcMotorEx used in pretty much the same way as DcMotor
         //I honestly don't really know the difference, but DcMotorEx seems to have more functionality
@@ -50,6 +59,7 @@ public class LancersTeleOp extends LinearOpMode {
             // movement
             final double speedMultiplier = gamepad1.a ? 1.0d : 0.8d;
 
+
             // Gamepad positions; Motors are swapped
             final double ly = -respectDeadZones(gamepad1.left_stick_y) * speedMultiplier; // Remember, Y stick value is reversed
             final double lx = -respectDeadZones(gamepad1.left_stick_x) * speedMultiplier; // Counteract imperfect strafing
@@ -68,7 +78,14 @@ public class LancersTeleOp extends LinearOpMode {
             final double frontRightPower = (ly - lx - rx) / denominator;
             final double backRightPower = (ly + lx - rx) / denominator;
 
-            final double intakePower = gamepad1.x ? 1.0d : 0.0d;
+            final double intakePower = gamepad2.left_trigger;
+            final double outtakePower = gamepad2.right_trigger;
+            if (gamepad2.a){
+                outtakeServo.setPosition(0);
+            }
+            else if (gamepad2.b){
+                outtakeServo.setPosition(1);
+            }
 
             //Speed multipliers by .9, reduces speed of motor
             //Motors get very funky when running at maximum capacity, cap their speed
