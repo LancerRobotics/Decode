@@ -21,6 +21,10 @@ android {
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
+
+    buildFeatures {
+        buildConfig true
+    }
 }
 
 repositories {
