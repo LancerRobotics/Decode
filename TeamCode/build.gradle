@@ -21,10 +21,6 @@ android {
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
-
-    buildFeatures {
-        buildConfig true
-    }
 }
 
 repositories {
@@ -42,5 +38,3 @@ dependencies {
     implementation "com.acmerobotics.roadrunner:actions:1.0.1"
     implementation "com.acmerobotics.dashboard:dashboard:0.4.17"
 }
-
-
