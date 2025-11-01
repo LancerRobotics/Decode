@@ -12,7 +12,7 @@ public class blueThree extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(12,132,Math.toRadians(45)));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(-54,54,Math.toRadians(45)));
         // initial position
 
         Movement movement = new Movement(hardwareMap);
@@ -21,11 +21,17 @@ public class blueThree extends LinearOpMode {
 
 
         Actions.runBlocking(
-                drive.actionBuilder(new Pose2d(24, 120,Math.toRadians(45)))
-                        .strafeTo(new Vector2d(48, 96))
-                        .turnTo(Math.toRadians(135))
+                drive.actionBuilder(new Pose2d(-54, 54,Math.toRadians(45)))
+                        .strafeTo(new Vector2d(0, 24))
+                        .turnTo(Math.toRadians(-45))
+
                         .stopAndAdd(new OuttakeMotor(true, hardwareMap))
                         .stopAndAdd(new OuttakeServo(0.7,hardwareMap))
+                        .waitSeconds(3)
+                        .stopAndAdd(new OuttakeServo(0,hardwareMap))
+
+
+
 
                         .build()
         );
