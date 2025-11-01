@@ -24,20 +24,26 @@ public class blueFour extends LinearOpMode {
                 drive.actionBuilder(new Pose2d(54, -54,Math.toRadians(45)))
                         .strafeTo(new Vector2d(0, 24))
                         .turnTo(Math.toRadians(-45))
-                        .stopAndAdd(new OuttakeMotor(true, hardwareMap))
-                        .stopAndAdd(new OuttakeServo(0.7, hardwareMap))
-                        .waitSeconds(3)
-                        .stopAndAdd(new OuttakeServo(0, hardwareMap))
 
-                        .stopAndAdd(new OuttakeMotor(true, hardwareMap))
-                        .stopAndAdd(new OuttakeServo(0.7, hardwareMap))
-                        .waitSeconds(3)
-                        .stopAndAdd(new OuttakeServo(0, hardwareMap))
 
-                        .stopAndAdd(new OuttakeMotor(true, hardwareMap))
-                        .stopAndAdd(new OuttakeServo(0.7, hardwareMap))
-                        .waitSeconds(3)
-                        .stopAndAdd(new OuttakeServo(0, hardwareMap))
+                        // Launch Start
+                        .stopAndAdd(new OuttakeServo(0.7,hardwareMap))
+                        .waitSeconds(0.7)
+                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .waitSeconds(2)
+                        // Launch End
+                        // Launch Start
+                        .stopAndAdd(new OuttakeServo(0.7,hardwareMap))
+                        .waitSeconds(0.7)
+                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .waitSeconds(2)
+                        // Launch End
+                        // Launch Start
+                        .stopAndAdd(new OuttakeServo(0.7,hardwareMap))
+                        .waitSeconds(0.7)
+                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .waitSeconds(2)
+                        // Launch End
 
 
 
