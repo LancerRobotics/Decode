@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.RRAutons;
 import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SleepAction;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -50,7 +52,7 @@ class Intake implements Action {
 
     private DcMotorEx intakeMotor;
 
-    public Intake(boolean running) {
+    public Intake(boolean running, HardwareMap hardwareMap) {
         this.running = running;
         this.hardwareMap = hardwareMap;
 
@@ -75,7 +77,7 @@ class OuttakeMotor implements Action {
     private DcMotorEx outtakeMotor;
     private Servo outtakeServo;
 
-    public OuttakeMotor(boolean running) {
+    public OuttakeMotor(boolean running, HardwareMap hardwareMap) {
         this.running = running;
         this.hardwareMap = hardwareMap;
 
@@ -95,23 +97,25 @@ class OuttakeMotor implements Action {
 
 class OuttakeServo implements Action {
     private HardwareMap hardwareMap;
-    private double pos = 0;
-
     private Servo outtakeServo;
+    private double pos;
 
-    public OuttakeServo(double pos) {
+    public OuttakeServo(double pos, HardwareMap hardwareMap) {
         // false for start position
         //true for end position
 
-        this.pos = pos;
         this.hardwareMap = hardwareMap;
 
         this.outtakeServo = hardwareMap.servo.get(LancersBotConfig.OUTTAKE_SERVO);
+        outtakeServo.setDirection(Servo.Direction.FORWARD);
     }
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
         outtakeServo.setPosition(pos);
+        //outtakeServo.setPosition(0.7);
+        //new SleepAction(0.7);
+        //outtakeServo.setPosition(1);
         return false;
     }
 }

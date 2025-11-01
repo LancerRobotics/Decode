@@ -66,7 +66,7 @@ public class LancersTeleOp extends LinearOpMode {
 
             // Gamepad positions; Motors are swapped
             final double ly = -respectDeadZones(gamepad1.left_stick_y) * speedMultiplier; // Remember, Y stick value is reversed
-            final double lx = -respectDeadZones(gamepad1.left_stick_x) * speedMultiplier; // Counteract imperfect strafing
+            final double lx = respectDeadZones(gamepad1.left_stick_x) * speedMultiplier; // Counteract imperfect strafing
             final double rx = respectDeadZones(gamepad1.right_stick_x) * speedMultiplier;
 
             // Denominator is the largest motor power (absolute value) or 1

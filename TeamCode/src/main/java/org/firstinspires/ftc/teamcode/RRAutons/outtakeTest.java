@@ -7,26 +7,27 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Autonomous(name="blueThree")
-public class blueThree extends LinearOpMode {
+@Autonomous(name="outtakeTest")
+public class outtakeTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(12,132,Math.toRadians(45)));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,Math.toRadians(0)));
         // initial position
 
         Movement movement = new Movement(hardwareMap);
 
         waitForStart(); // Required for all autons and teleops
 
-
         Actions.runBlocking(
-                drive.actionBuilder(new Pose2d(24, 120,Math.toRadians(45)))
-                        .strafeTo(new Vector2d(48, 96))
-                        .turnTo(Math.toRadians(135))
-                        .stopAndAdd(new OuttakeMotor(true, hardwareMap))
+                drive.actionBuilder(new Pose2d(0, 0,Math.toRadians(0)))
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // on
+                        .waitSeconds(3)
+                        .stopAndAdd(new OuttakeServo(0.3,hardwareMap))
+                        .waitSeconds(2)
                         .stopAndAdd(new OuttakeServo(0.7,hardwareMap))
-
+                        .waitSeconds(2)
+                        .stopAndAdd(new OuttakeMotor(false, hardwareMap)) // off
                         .build()
         );
 
