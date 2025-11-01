@@ -7,12 +7,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Autonomous(name="blueThree")
-public class blueThree extends LinearOpMode {
+@Autonomous(name="redTwo")
+public class redTwo extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(-54,54,Math.toRadians(45)));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(54,54,Math.toRadians(45)));
         // initial position
 
         Movement movement = new Movement(hardwareMap);
@@ -21,7 +21,7 @@ public class blueThree extends LinearOpMode {
 
 
         Actions.runBlocking(
-                drive.actionBuilder(new Pose2d(-54, 54,Math.toRadians(45)))
+                drive.actionBuilder(new Pose2d(54, 54,Math.toRadians(45)))
                         .strafeTo(new Vector2d(0, 24))
                         .turnTo(Math.toRadians(-45))
 

@@ -103,6 +103,7 @@ class OuttakeServo implements Action {
     public OuttakeServo(double pos, HardwareMap hardwareMap) {
         // false for start position
         //true for end position
+        this.pos = pos;
 
         this.hardwareMap = hardwareMap;
 
