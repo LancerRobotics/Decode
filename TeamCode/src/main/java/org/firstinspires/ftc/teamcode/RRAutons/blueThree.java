@@ -21,7 +21,7 @@ public class blueThree extends LinearOpMode {
 
 
         Actions.runBlocking(
-                drive.actionBuilder(new Pose2d(-54, 54,Math.toRadians(45)))
+                drive.actionBuilder(new Pose2d(-54, -54,Math.toRadians(135)))
                         .strafeTo(new Vector2d(0, 24))
                         .turnTo(Math.toRadians(-45))
 

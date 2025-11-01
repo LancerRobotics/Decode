@@ -86,8 +86,8 @@ public class LancersTeleOp extends LinearOpMode {
             final double outtakePower = (gamepad2.right_trigger>0)?1:0;
 
             if (gamepad2.y && servoPosition==1){
-                servoPosition=0.7;
-                outtakeServo.setPosition(0.7);
+                servoPosition=0.8;
+                outtakeServo.setPosition(0.8);
                 sleep(700);
                 servoPosition=1;
                 outtakeServo.setPosition(1);
