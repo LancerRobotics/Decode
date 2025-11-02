@@ -19,6 +19,11 @@ public class LancersTeleOp extends LinearOpMode {
 
     private boolean isMoving;
     private double intakePow;
+    private double prevBumperPow;
+
+    private long delayTimer = 10;
+    private long lastTime = System.currentTimeMillis();
+    private boolean startTimer = false;
 
     @Override
     public void runOpMode() throws InterruptedException  {
@@ -46,6 +51,7 @@ public class LancersTeleOp extends LinearOpMode {
         intakePow = 1;
         servoPosition = 1;
         outtakeServo.setPosition(1);
+        prevBumperPow = 0;
 
 
         //DcMotorEx inherits from DcMotor class,
@@ -88,23 +94,71 @@ public class LancersTeleOp extends LinearOpMode {
             final double backRightPower = (ly + lx - rx) / denominator;
 
 
-            if (gamepad1.left_bumper){
-                if (isMoving) {
-                    intakeMotor.setPower(0); //off
-                    isMoving = false;
-                }
-                else {
-                    intakeMotor.setPower(intakePow); //on
-                    isMoving = true;
+            if (gamepad1.left_bumper) {
+                if(!startTimer) delayTimer = 50; // set a different variable later, 10 is just placeholder
+                startTimer = true;
+                // add a delay till we set intakemotor to false and ismoving to false without stopping the whole bot here
+            }
+
+            long currentTime = System.currentTimeMillis();
+            if(startTimer) {
+                long timePassed = currentTime - lastTime;
+                delayTimer-=timePassed;
+                if(delayTimer <= 0) {
+                    if(isMoving) {
+                        intakeMotor.setPower(0);
+                        isMoving = false;
+                    }
+                    else {
+                        intakeMotor.setPower(1);
+                        isMoving = true;
+                    }
+                    startTimer = false;
                 }
             }
-            else if (gamepad1.right_bumper){
+            lastTime = currentTime;
+
+
+
+//            if (gamepad1.left_bumper){
+//                while(gamepad1.left_bumper) {
+//                    if(isMoving) {
+//                        intakeMotor.setPower(0);
+//                        isMoving = false;
+//                    }
+//                    else {
+//                        intakeMotor.setPower(1);
+//                        isMoving = true;
+//                    }
+//                }
+
+                //if(!gamepad.leftbumper)
+//                if ((prevBumperPow == 1) && !gamepad1.left_bumper) {
+
+//                }
+//                    if (isMoving) {
+//                        sleep(50);
+//                        isMoving = false;
+//                        intakeMotor.setPower(0); //off
+//                    }
+//                    else {
+//                        sleep(50);
+//                        isMoving = true;
+//                        intakeMotor.setPower(intakePow); //on
+//                }
+
+            }
+            if (gamepad1.right_bumper){
                 intakePow *= -1;
                 intakeMotor.setPower(intakePow);
             }
             else if (respectDeadZones(gamepad1.left_trigger) > 0){
                 intakeMotor.setPower((gamepad1.left_trigger));
             }
+
+            if (gamepad1.left_bumper) {prevBumperPow = 1;}
+            else if (gamepad1.right_bumper) {prevBumperPow = -1;}
+            else {prevBumperPow = 0;}
 
             outtakeMotor.setPower(((gamepad2.right_trigger>0)?1:0));
 
