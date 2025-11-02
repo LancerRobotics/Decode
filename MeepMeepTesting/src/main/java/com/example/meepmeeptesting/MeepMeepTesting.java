@@ -15,18 +15,18 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-54, -54,Math.toRadians(45)))
-                .strafeTo(new Vector2d(-24, -24))
-                .turnTo(Math.toRadians(230))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(56, 12,Math.toRadians(180)))
+//                .stopAndAdd(new OuttakeMotor(true,hardwareMap))
 
-                .turnTo(Math.toRadians(45))
-                .strafeTo(new Vector2d(36, 36))
-                .turnTo(Math.toRadians(-90)) // 270 deg
-                .strafeTo(new Vector2d(60, 60))
+                .strafeTo(new Vector2d(56, 36))
+//                .stopAndAdd(new OuttakeMotor(false,hardwareMap))
 
                 .build()
 
+//                .build()
+
         );
+            System.out.println("done");
 
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)

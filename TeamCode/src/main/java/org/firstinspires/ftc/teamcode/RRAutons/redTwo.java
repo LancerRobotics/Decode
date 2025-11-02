@@ -47,6 +47,9 @@ public class redTwo extends LinearOpMode {
                         .waitSeconds(2)
                         // Launch End
 
+                        .strafeTo(new Vector2d(24,0))
+                        .turnTo(Math.toRadians(90))
+
                         .stopAndAdd(new OuttakeMotor(false,hardwareMap))
 
                         .build()

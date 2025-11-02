@@ -47,6 +47,10 @@ public class redOne extends LinearOpMode {
                         .waitSeconds(2)
                         // Launch End
 
+                        //parking
+                        .strafeTo(new Vector2d(24,0))
+                        .turnTo(Math.toRadians(90))
+
                         .stopAndAdd(new OuttakeMotor(false,hardwareMap))
 
                         .build()

@@ -48,6 +48,9 @@ public class blueThree extends LinearOpMode {
                         .waitSeconds(1)
                         // Launch End
 
+                        .strafeTo(new Vector2d(24,0))
+                        .turnTo(Math.toRadians(90))
+
                         .stopAndAdd(new OuttakeMotor(false,hardwareMap))
 
                         .build()
