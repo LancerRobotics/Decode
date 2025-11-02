@@ -12,7 +12,7 @@ public class redOne extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(-54,-54,Math.toRadians(45)));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(-54,54,Math.toRadians(315)));
         // initial position
 
         Movement movement = new Movement(hardwareMap);
@@ -21,29 +21,33 @@ public class redOne extends LinearOpMode {
 
 
         Actions.runBlocking(
-                drive.actionBuilder(new Pose2d(-54, -54,Math.toRadians(45)))
-                        .strafeTo(new Vector2d(0, 24))
-                        .turnTo(Math.toRadians(-45))
+                drive.actionBuilder(new Pose2d(-54, 54,Math.toRadians(315)))
+                        .strafeTo(new Vector2d(-24, 24))
+                        .turnTo(Math.toRadians(135))
+
+                        .stopAndAdd(new OuttakeMotor(true,hardwareMap))
+                        .waitSeconds(3)
 
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.7,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
                         .waitSeconds(0.7)
                         .stopAndAdd(new OuttakeServo(1,hardwareMap))
                         .waitSeconds(2)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.7,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
                         .waitSeconds(0.7)
                         .stopAndAdd(new OuttakeServo(1,hardwareMap))
                         .waitSeconds(2)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.7,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
                         .waitSeconds(0.7)
                         .stopAndAdd(new OuttakeServo(1,hardwareMap))
                         .waitSeconds(2)
                         // Launch End
 
+                        .stopAndAdd(new OuttakeMotor(false,hardwareMap))
 
                         .build()
         );

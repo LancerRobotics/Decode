@@ -17,6 +17,9 @@ public class LancersTeleOp extends LinearOpMode {
 
     private double servoPosition = 0.0;
 
+    private boolean isMoving;
+    private double intakePow;
+
     @Override
     public void runOpMode() throws InterruptedException  {
         // Get from hardwaremap, initialize variables as DcMotor type
@@ -39,6 +42,8 @@ public class LancersTeleOp extends LinearOpMode {
 
         final Servo outtakeServo = hardwareMap.servo.get(LancersBotConfig.OUTTAKE_SERVO);
 
+        isMoving = false;
+        intakePow = 1;
         servoPosition = 1;
         outtakeServo.setPosition(1);
 
@@ -82,8 +87,35 @@ public class LancersTeleOp extends LinearOpMode {
             final double frontRightPower = (ly - lx - rx) / denominator;
             final double backRightPower = (ly + lx - rx) / denominator;
 
-            final double intakePower = (gamepad2.left_trigger>0)?1:0;
-            final double outtakePower = (gamepad2.right_trigger>0)?1:0;
+
+            if (gamepad1.left_bumper){
+                if (isMoving) {
+                    intakeMotor.setPower(0); //off
+                    isMoving = false;
+                }
+                else {
+                    intakeMotor.setPower(intakePow); //on
+                    isMoving = true;
+                }
+            }
+            else if (gamepad1.right_bumper){
+                intakePow *= -1;
+                intakeMotor.setPower(intakePow);
+            }
+            else if (respectDeadZones(gamepad1.left_trigger) > 0){
+                intakeMotor.setPower((gamepad1.left_trigger));
+            }
+
+            outtakeMotor.setPower(((gamepad2.right_trigger>0)?1:0));
+
+            //else if (respectDeadZones(gamepad1.right_trigger) > 0){
+            //    intakeMotor.setPower((-gamepad1.right_trigger));
+            //}
+
+            // TEMP
+            //final double intakePower = (gamepad1.left_trigger>0)?1:0;
+
+
 
             if (gamepad2.y && servoPosition==1){
                 servoPosition=0.8;
@@ -100,8 +132,10 @@ public class LancersTeleOp extends LinearOpMode {
             rightFront.setPower(frontRightPower);
             rightRear.setPower(backRightPower);
 
-            intakeMotor.setPower(intakePower);
-            outtakeMotor.setPower(outtakePower);
+            // TOOD: TEMP, FIX LATER
+            //intakeMotor.setPower(intakePower);
+            //outtakeMotor.setPower(outtakePower);
+
             // we finished an iteration, record the time the last value was recorded for use in finding sum
             timeStampAtLastOpModeRun = currentRunTimeStamp;
 
