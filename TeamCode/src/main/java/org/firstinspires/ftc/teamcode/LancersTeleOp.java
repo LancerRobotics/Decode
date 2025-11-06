@@ -27,7 +27,7 @@ public class LancersTeleOp extends LinearOpMode {
 
 
     @Override
-    public void runOpMode() throws InterruptedException  {
+    public void runOpMode() throws InterruptedException {
         // Get from hardwaremap, initialize variables as DcMotor type
         final DcMotor leftFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -77,10 +77,12 @@ public class LancersTeleOp extends LinearOpMode {
             // OUTTAKE MOTOR STUFF (STILL NEED TO BE TESTED)
             double outtakeTicksPerSec = outtakeMotor.getVelocity();
             double outtakeRPM = (outtakeTicksPerSec / TICKS_PER_REV) * 60.0;
-            if(outtakeRPM >= 90) {
-                // vibrate the gamepads
+            if (outtakeRPM >= 90) {
+                // vibrate the gamepads (I don't think our gamepad can rumble)
                 gamepad1.rumble(500); // duration can be changed to whatever
                 gamepad2.rumble(500);
+
+                telemetry.addData("RPM-threshold reached! The current RPM: ", outtakeRPM);
             }
 
             // movement
@@ -107,21 +109,20 @@ public class LancersTeleOp extends LinearOpMode {
 
 
             if (gamepad1.left_bumper) {
-                if(!startTimer) delayTimer = 50; // set a different variable later, 10 is just placeholder
+                if (!startTimer) delayTimer = 50; // set a different variable later, 10 is just placeholder
                 startTimer = true;
                 // add a delay till we set intakemotor to false and ismoving to false without stopping the whole bot here
             }
 
             long currentTime = System.currentTimeMillis();
-            if(startTimer) {
+            if (startTimer) {
                 long timePassed = currentTime - lastTime;
-                delayTimer-=timePassed;
-                if(delayTimer <= 0) {
-                    if(isMoving) {
+                delayTimer -= timePassed;
+                if (delayTimer <= 0) {
+                    if (isMoving) {
                         intakeMotor.setPower(0);
                         isMoving = false;
-                    }
-                    else {
+                    } else {
                         intakeMotor.setPower(1);
                         isMoving = true;
                     }
@@ -130,20 +131,23 @@ public class LancersTeleOp extends LinearOpMode {
             }
             lastTime = currentTime;
 
-            }
-            if (gamepad1.right_bumper){
+
+            if (gamepad1.right_bumper) {
                 intakePow *= -1;
                 intakeMotor.setPower(intakePow);
-            }
-            else if (respectDeadZones(gamepad1.left_trigger) > 0){
+            } else if (respectDeadZones(gamepad1.left_trigger) > 0) {
                 intakeMotor.setPower((gamepad1.left_trigger));
             }
 
-            if (gamepad1.left_bumper) {prevBumperPow = 1;}
-            else if (gamepad1.right_bumper) {prevBumperPow = -1;}
-            else {prevBumperPow = 0;}
+            if (gamepad1.left_bumper) {
+                prevBumperPow = 1;
+            } else if (gamepad1.right_bumper) {
+                prevBumperPow = -1;
+            } else {
+                prevBumperPow = 0;
+            }
 
-            outtakeMotor.setPower(((gamepad2.right_trigger>0)?1:0));
+            outtakeMotor.setPower(((gamepad2.right_trigger > 0) ? 1 : 0));
 
             //else if (respectDeadZones(gamepad1.right_trigger) > 0){
             //    intakeMotor.setPower((-gamepad1.right_trigger));
@@ -153,12 +157,11 @@ public class LancersTeleOp extends LinearOpMode {
             //final double intakePower = (gamepad1.left_trigger>0)?1:0;
 
 
-
-            if (gamepad2.y && servoPosition==1){
-                servoPosition=0.8;
+            if (gamepad2.y && servoPosition == 1) {
+                servoPosition = 0.8;
                 outtakeServo.setPosition(0.8);
                 sleep(700);
-                servoPosition=1;
+                servoPosition = 1;
                 outtakeServo.setPosition(1);
             }
 
@@ -182,7 +185,6 @@ public class LancersTeleOp extends LinearOpMode {
             telemetry.update();
         }
     }
-
     public static final double DEAD_ZONE_LIMIT = 0.15d;
 
     /**
@@ -198,3 +200,4 @@ public class LancersTeleOp extends LinearOpMode {
         }
     }
 }
+
