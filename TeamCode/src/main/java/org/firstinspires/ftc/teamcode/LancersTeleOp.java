@@ -25,6 +25,7 @@ public class LancersTeleOp extends LinearOpMode {
     private long lastTime = System.currentTimeMillis();
     private boolean startTimer = false;
 
+
     @Override
     public void runOpMode() throws InterruptedException  {
         // Get from hardwaremap, initialize variables as DcMotor type
@@ -42,7 +43,9 @@ public class LancersTeleOp extends LinearOpMode {
         rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
 
         //outtake
-        final DcMotor outtakeMotor = hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR);
+        final DcMotorEx outtakeMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR);
+        final double TICKS_PER_REV = 1534.4; // CHANGE THIS DEPENDING ON THE MOTOR MODEL!!!!
+
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
         final Servo outtakeServo = hardwareMap.servo.get(LancersBotConfig.OUTTAKE_SERVO);
@@ -70,6 +73,15 @@ public class LancersTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
             currentRunTimeStamp = System.currentTimeMillis();
+
+            // OUTTAKE MOTOR STUFF (STILL NEED TO BE TESTED)
+            double outtakeTicksPerSec = outtakeMotor.getVelocity();
+            double outtakeRPM = (outtakeTicksPerSec / TICKS_PER_REV) * 60.0;
+            if(outtakeRPM >= 90) {
+                // vibrate the gamepads
+                gamepad1.rumble(500); // duration can be changed to whatever
+                gamepad2.rumble(500);
+            }
 
             // movement
             final double speedMultiplier = gamepad1.a ? 1.0d : 0.8d;
@@ -117,35 +129,6 @@ public class LancersTeleOp extends LinearOpMode {
                 }
             }
             lastTime = currentTime;
-
-
-
-//            if (gamepad1.left_bumper){
-//                while(gamepad1.left_bumper) {
-//                    if(isMoving) {
-//                        intakeMotor.setPower(0);
-//                        isMoving = false;
-//                    }
-//                    else {
-//                        intakeMotor.setPower(1);
-//                        isMoving = true;
-//                    }
-//                }
-
-                //if(!gamepad.leftbumper)
-//                if ((prevBumperPow == 1) && !gamepad1.left_bumper) {
-
-//                }
-//                    if (isMoving) {
-//                        sleep(50);
-//                        isMoving = false;
-//                        intakeMotor.setPower(0); //off
-//                    }
-//                    else {
-//                        sleep(50);
-//                        isMoving = true;
-//                        intakeMotor.setPower(intakePow); //on
-//                }
 
             }
             if (gamepad1.right_bumper){
