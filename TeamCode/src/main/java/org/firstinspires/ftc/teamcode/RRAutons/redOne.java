@@ -46,10 +46,37 @@ public class redOne extends LinearOpMode {
                         .stopAndAdd(new OuttakeServo(1,hardwareMap))
                         .waitSeconds(2)
                         // Launch End
+                        .turnTo(Math.toRadians(90))
+                        .strafeTo(new Vector2d(-12,24))
+                        .strafeTo(new Vector2d(-12,52))
+                        .strafeTo(new Vector2d(-24, 24))
+                        .turnTo(Math.toRadians(135))
+
+
+                        .waitSeconds(1)
+
+                        // Launch Start
+                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        .waitSeconds(0.7)
+                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .waitSeconds(1)
+                        // Launch End
+                        // Launch Start
+                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        .waitSeconds(0.7)
+                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .waitSeconds(1)
+                        // Launch End
+                        // Launch Start
+                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        .waitSeconds(0.7)
+                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .waitSeconds(1)
 
                         //parking
                         .strafeTo(new Vector2d(24,0))
                         .turnTo(Math.toRadians(90))
+
 
                         .stopAndAdd(new OuttakeMotor(false,hardwareMap))
 
