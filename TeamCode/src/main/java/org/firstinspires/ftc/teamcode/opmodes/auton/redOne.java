@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.RRAutons;
+package org.firstinspires.ftc.teamcode.opmodes.auton;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -7,13 +7,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-
-@Autonomous(name="blueThree")
-public class blueThree extends LinearOpMode {
+@Autonomous(name="redOne")
+public class redOne extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(-54, -54,Math.toRadians(45)));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(-54,54,Math.toRadians(315)));
         // initial position
 
         Movement movement = new Movement(hardwareMap);
@@ -22,10 +21,36 @@ public class blueThree extends LinearOpMode {
 
 
         Actions.runBlocking(
-                drive.actionBuilder(new Pose2d(-54, -54,Math.toRadians(45)))
+                drive.actionBuilder(new Pose2d(-54, 54,Math.toRadians(315)))
+                        .strafeTo(new Vector2d(-24, 24))
+                        .turnTo(Math.toRadians(135))
+
                         .stopAndAdd(new OuttakeMotor(true,hardwareMap))
-                        .strafeTo(new Vector2d(-24, -24))
-                        .turnTo(Math.toRadians(230))
+                        .waitSeconds(3)
+
+                        // Launch Start
+                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        .waitSeconds(0.7)
+                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .waitSeconds(2)
+                        // Launch End
+                        // Launch Start
+                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        .waitSeconds(0.7)
+                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .waitSeconds(2)
+                        // Launch End
+                        // Launch Start
+                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        .waitSeconds(0.7)
+                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .waitSeconds(2)
+                        // Launch End
+                        .turnTo(Math.toRadians(90))
+                        .strafeTo(new Vector2d(-12,24))
+                        .strafeTo(new Vector2d(-12,52))
+                        .strafeTo(new Vector2d(-24, 24))
+                        .turnTo(Math.toRadians(135))
 
 
                         .waitSeconds(1)
@@ -47,36 +72,11 @@ public class blueThree extends LinearOpMode {
                         .waitSeconds(0.7)
                         .stopAndAdd(new OuttakeServo(1,hardwareMap))
                         .waitSeconds(1)
-                        // Launch End
-                        .turnTo(Math.toRadians(270))
-                        .strafeTo(new Vector2d(-12,-24))
-                        .strafeTo(new Vector2d(-12,-52))
-                        .strafeTo(new Vector2d(-24, -24))
-                        .turnTo(Math.toRadians(230))
 
-
-                        .waitSeconds(1)
-
-                        // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
-                        .waitSeconds(1)
-                        // Launch End
-                        // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
-                        .waitSeconds(1)
-                        // Launch End
-                        // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
-                        .waitSeconds(1)
-
+                        //parking
                         .strafeTo(new Vector2d(24,0))
                         .turnTo(Math.toRadians(90))
+
 
                         .stopAndAdd(new OuttakeMotor(false,hardwareMap))
 

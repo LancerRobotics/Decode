@@ -13,4 +13,6 @@ LancersBotConfig {
 
     public final static String OUTTAKE_SERVO = "outtakeServo"; // EH servo port 0
     public final static String IMU = "imu_ex"; // Expansion Hub IMU
+
+    public final static String LIMELIGHT = "LIMELIGHT";
 }

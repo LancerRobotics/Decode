@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.RRAutons;
+package org.firstinspires.ftc.teamcode.opmodes.auton;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -7,12 +7,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Autonomous(name="redOne")
-public class redOne extends LinearOpMode {
+@Autonomous(name="redTwo")
+public class redTwo extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(-54,54,Math.toRadians(315)));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(60, 12,Math.toRadians(171.870)));
         // initial position
 
         Movement movement = new Movement(hardwareMap);
@@ -21,7 +21,7 @@ public class redOne extends LinearOpMode {
 
 
         Actions.runBlocking(
-                drive.actionBuilder(new Pose2d(-54, 54,Math.toRadians(315)))
+                drive.actionBuilder(new Pose2d(60, 12,Math.toRadians(171.870)))
                         .strafeTo(new Vector2d(-24, 24))
                         .turnTo(Math.toRadians(135))
 
@@ -73,10 +73,8 @@ public class redOne extends LinearOpMode {
                         .stopAndAdd(new OuttakeServo(1,hardwareMap))
                         .waitSeconds(1)
 
-                        //parking
                         .strafeTo(new Vector2d(24,0))
                         .turnTo(Math.toRadians(90))
-
 
                         .stopAndAdd(new OuttakeMotor(false,hardwareMap))
 
