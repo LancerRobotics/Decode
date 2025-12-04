@@ -124,11 +124,11 @@ public class LancersTeleOp extends LinearOpMode {
 
 
 
-            if (gamepad2.left_bumper && servoPosition==0.2){
+            if (gamepad2.right_bumper && servoPosition==0.2){
                 servoPosition=0.7;
                 outtakeServo.setPosition(0.7); // close position, ready to intake
             }
-            else if ((gamepad2.left_bumper && servoPosition==0.7)){
+            else if ((gamepad2.right_bumper && servoPosition==0.7)){
                 servoPosition=0.2;
                 outtakeServo.setPosition(0.2); // open position, ready to launch
             }
