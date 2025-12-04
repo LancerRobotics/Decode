@@ -11,6 +11,7 @@ LancersBotConfig {
 
     public final static String INTAKE_MOTOR = "intakeMotor"; // EH motor port 0
     public final static String OUTTAKE_MOTOR = "outtakeMotor"; // EH motor port 1
+    public final static String OUTTAKE_MOTOR_TWO = "outtakeMotorTwo"; // EH motor port 2
 
     public final static String OUTTAKE_SERVO = "outtakeServo"; // EH servo port 0
     public final static String IMU = "imu_ex"; // Expansion Hub IMU

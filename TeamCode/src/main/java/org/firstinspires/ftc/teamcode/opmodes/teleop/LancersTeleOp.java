@@ -18,12 +18,19 @@ public class LancersTeleOp extends LinearOpMode {
 
     private double servoPosition = 0.0;
 
+    // DRIVETRAIN SPEED MULTIPLIER LOCK VARIABLES
+    private boolean fullSpeedLock;
+    private boolean lastLock;
+
 
     // INTAKE VARIABLES
     private double intakeDirection = 1; // +1 or -1
     private double intakePower = 0; // 0 or 1
+    private double outtakeTwoPower = 0; // 0 or 1
     private boolean lastLeft = false;
     private boolean lastRight = false;
+    private boolean lastY = false;
+    private boolean lastServo = false;
 
 
 
@@ -46,12 +53,21 @@ public class LancersTeleOp extends LinearOpMode {
         //outtake
         final DcMotor outtakeMotor = hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR);
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        final DcMotor outtakeMotorTwo = hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR_TWO);
+        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
         final Servo outtakeServo = hardwareMap.servo.get(LancersBotConfig.OUTTAKE_SERVO);
 
-        servoPosition = 0.7;
+        servoPosition = 0.55;
 
-        outtakeServo.setPosition(0.7); // servo intital position
+        outtakeServo.setPosition(0.55); // servo intital position
+
+        fullSpeedLock = false;
+        lastLock = false;
+
+        intakePower = 0;
+        outtakeTwoPower = 0;
+        intakeDirection = 1;
 
 
         //DcMotorEx inherits from DcMotor class,
@@ -74,11 +90,17 @@ public class LancersTeleOp extends LinearOpMode {
             // movement
             final double speedMultiplier = gamepad1.a ? 1.0d : 0.8d;
 
+            // full speed
+            if (gamepad1.b && !lastLock) {
+                fullSpeedLock = !fullSpeedLock;
+            }
+            lastLock = gamepad1.b;
+
 
             // Gamepad positions; Motors are swapped
-            final double ly = -respectDeadZones(gamepad1.left_stick_y) * speedMultiplier; // Remember, Y stick value is reversed
-            final double lx = respectDeadZones(gamepad1.left_stick_x) * speedMultiplier;
-            final double rx = respectDeadZones(gamepad1.right_stick_x) * speedMultiplier;
+            final double ly = -respectDeadZones(gamepad1.left_stick_y) * (fullSpeedLock ? 1.0d : speedMultiplier); // Remember, Y stick value is reversed
+            final double lx = respectDeadZones(gamepad1.left_stick_x) * (fullSpeedLock ? 1.0d : speedMultiplier);
+            final double rx = respectDeadZones(gamepad1.right_stick_x) * (fullSpeedLock ? 1.0d : speedMultiplier);
 
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio,
@@ -96,12 +118,27 @@ public class LancersTeleOp extends LinearOpMode {
 
             boolean left = gamepad1.left_bumper;     // on/off toggle
             boolean right = gamepad1.right_bumper;   // direction toggle
+            //boolean y_button = gamepad2.y;
 
             // INTAKE ON/OFF (left bumper)
             if (left && !lastLeft) {
-                if (intakePower == 0) intakePower = 1;
-                else intakePower = 0;
+                if (intakePower == 0){
+                    intakePower = 1;
+                }
+                else {
+                    intakePower = 0;
+                }
             }
+
+            // SECOND OUTTAKE MOTOR TOGGLE (y button)
+            //if (y_button && !lastY) {
+            //    if (outtakeTwoPower == 0){
+            //      outtakeTwoPower = 1;
+            //    }
+            //    else {
+            //        outtakeTwoPower = 0;
+            //    }
+            //}
 
             // INTAKE DIRECTION (right bumper)
             if (right && !lastRight) {
@@ -111,8 +148,8 @@ public class LancersTeleOp extends LinearOpMode {
             lastLeft = left;
             lastRight = right;
 
-
-
+            intakeMotor.setPower(intakePower*intakeDirection);
+            outtakeMotorTwo.setPower(((gamepad2.right_trigger>0)?-0.5:0));
             outtakeMotor.setPower(((gamepad2.right_trigger>0)?1:0));
 
             //else if (respectDeadZones(gamepad1.right_trigger) > 0){
@@ -124,14 +161,18 @@ public class LancersTeleOp extends LinearOpMode {
 
 
 
-            if (gamepad2.right_bumper && servoPosition==0.2){
-                servoPosition=0.7;
-                outtakeServo.setPosition(0.7); // close position, ready to intake
+            if (gamepad2.right_bumper && !lastServo){
+                if (servoPosition == 0.35){
+                    servoPosition=0.55;
+                    outtakeServo.setPosition(0.55); // close position, ready to intake
+                }
+                else {
+                    servoPosition=0.35;
+                    outtakeServo.setPosition(0.35); // open position, ready to launch
+                }
             }
-            else if ((gamepad2.right_bumper && servoPosition==0.7)){
-                servoPosition=0.2;
-                outtakeServo.setPosition(0.2); // open position, ready to launch
-            }
+
+            lastServo = gamepad2.right_bumper;
 
             //Speed multipliers by .9, reduces speed of motor
             //Motors get very funky when running at maximum capacity, cap their speed
@@ -149,6 +190,13 @@ public class LancersTeleOp extends LinearOpMode {
 
             //telemetry.addData("X-value", parallelEncoder.getCurrentPosition());
             //telemetry.addData("Y-value", perpendicularEncoder.getCurrentPosition());
+
+            telemetry.addLine("Speed Lock: " + (fullSpeedLock ? "On" : "Off"));
+            telemetry.addLine("Speed Multiplier: " + ((speedMultiplier==1.0d) ? "Toggle On" : "Toggle Off"));
+            telemetry.addLine("Second Outtake Motor Power: " + outtakeTwoPower);
+            telemetry.addLine("Intake Power: " + intakePower);
+            telemetry.addLine("Intake Direction: " + ((intakeDirection==1)? "In" : "Out"));
+            telemetry.addLine("Servo Position: "+servoPosition);
 
             telemetry.update();
         }
