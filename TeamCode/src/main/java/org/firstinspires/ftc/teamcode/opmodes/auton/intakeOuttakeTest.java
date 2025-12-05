@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Autonomous(name="outtakeTest")
-public class outtakeTest extends LinearOpMode {
+@Autonomous(name="intakeOuttakeTest")
+public class intakeOuttakeTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -20,13 +20,13 @@ public class outtakeTest extends LinearOpMode {
 
         Actions.runBlocking(
                 drive.actionBuilder(new Pose2d(0, 0,Math.toRadians(0)))
-                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // on
-                        .waitSeconds(3)
-                        .stopAndAdd(new OuttakeServo(0.3,hardwareMap))
-                        .waitSeconds(2)
-                        .stopAndAdd(new OuttakeServo(0.7,hardwareMap))
-                        .waitSeconds(2)
-                        .stopAndAdd(new OuttakeMotor(false, hardwareMap)) // off
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
+                        .waitSeconds(10)
                         .build()
         );
 

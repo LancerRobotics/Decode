@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.LancersBotConfig;
 
 // hi
@@ -37,13 +38,13 @@ public class LancersTeleOp extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException  {
         // Get from hardwaremap, initialize variables as DcMotor type
-        final DcMotor leftFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
+        final DcMotorEx leftFront = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         final DcMotorEx leftRear = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.REAR_LEFT_MOTOR);
         leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
-        final DcMotor rightFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_RIGHT_MOTOR);
+        final DcMotorEx rightFront = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.FRONT_RIGHT_MOTOR);
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        final DcMotor rightRear = hardwareMap.dcMotor.get(LancersBotConfig.REAR_RIGHT_MOTOR);
+        final DcMotorEx rightRear = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.REAR_RIGHT_MOTOR);
         rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
 
         //intake
@@ -172,6 +173,8 @@ public class LancersTeleOp extends LinearOpMode {
                 }
             }
 
+
+
             lastServo = gamepad2.right_bumper;
 
             //Speed multipliers by .9, reduces speed of motor
@@ -197,6 +200,11 @@ public class LancersTeleOp extends LinearOpMode {
             telemetry.addLine("Intake Power: " + intakePower);
             telemetry.addLine("Intake Direction: " + ((intakeDirection==1)? "In" : "Out"));
             telemetry.addLine("Servo Position: "+servoPosition);
+
+            telemetry.addLine("Front Left Current: " + leftFront.getCurrent(CurrentUnit.AMPS));
+            telemetry.addLine("Front Right Current: " + rightFront.getCurrent(CurrentUnit.AMPS));
+            telemetry.addLine("Back Left Current: " + leftRear.getCurrent(CurrentUnit.AMPS));
+            telemetry.addLine("Back Right Current: " + rightRear.getCurrent(CurrentUnit.AMPS));
 
             telemetry.update();
         }

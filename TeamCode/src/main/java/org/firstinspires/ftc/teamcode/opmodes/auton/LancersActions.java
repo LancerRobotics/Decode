@@ -73,21 +73,24 @@ class OuttakeMotor implements Action {
     private boolean running = false;
 
     private DcMotorEx outtakeMotor;
-    private Servo outtakeServo;
+    private DcMotorEx outtakeMotorTwo;
 
     public OuttakeMotor(boolean running, HardwareMap hardwareMap) {
         this.running = running;
         this.hardwareMap = hardwareMap;
 
         this.outtakeMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR);
+        this.outtakeMotorTwo = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR_TWO);
     }
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
         if (running) {
             outtakeMotor.setPower(1);
+            outtakeMotorTwo.setPower(-1);
         } else {
             outtakeMotor.setPower(0);
+            outtakeMotorTwo.setPower(0);
         }
         return false;
     }
@@ -96,12 +99,12 @@ class OuttakeMotor implements Action {
 class OuttakeServo implements Action {
     private HardwareMap hardwareMap;
     private Servo outtakeServo;
-    private double pos;
+    private boolean closeGate;
 
-    public OuttakeServo(double pos, HardwareMap hardwareMap) {
+    public OuttakeServo(boolean closeGate, HardwareMap hardwareMap) {
         // false for start position
         //true for end position
-        this.pos = pos;
+        this.closeGate = closeGate;
 
         this.hardwareMap = hardwareMap;
 
@@ -111,10 +114,12 @@ class OuttakeServo implements Action {
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
-        outtakeServo.setPosition(pos);
-        //outtakeServo.setPosition(0.7);
-        //new SleepAction(0.7);
-        //outtakeServo.setPosition(1);
+        if (this.closeGate) {
+            this.outtakeServo.setPosition(0.55);
+        }
+        else {
+            this.outtakeServo.setPosition(0.35);
+        }
         return false;
     }
 }

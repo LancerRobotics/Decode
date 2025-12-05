@@ -29,21 +29,21 @@ public class redOne extends LinearOpMode {
                         .waitSeconds(3)
 
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
                         .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
                         .waitSeconds(2)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
                         .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
                         .waitSeconds(2)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
                         .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
                         .waitSeconds(2)
                         // Launch End
                         .turnTo(Math.toRadians(90))
@@ -56,21 +56,21 @@ public class redOne extends LinearOpMode {
                         .waitSeconds(1)
 
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
                         .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
                         .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
                         .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
                         .waitSeconds(1)
 
                         //parking

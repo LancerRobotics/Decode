@@ -30,21 +30,21 @@ public class blueThreeHuman extends LinearOpMode {
                         .waitSeconds(0.3)
 
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        
                         .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        
                         .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        
                         .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        
                         //.waitSeconds(1)
                         // Launch End
 
@@ -60,21 +60,21 @@ public class blueThreeHuman extends LinearOpMode {
                         .strafeTo(new Vector2d(-24, -24))
 
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        
                         .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        
                         .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(0.8,hardwareMap))
+                        
                         .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(1,hardwareMap))
+                        
                         .waitSeconds(1)
                         // Launch End
 
