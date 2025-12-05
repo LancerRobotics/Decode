@@ -68,17 +68,7 @@ public class blueThree extends LinearOpMode {
                         .waitSeconds(1)
 
                         // Launch Start
-                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
-                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
-                        .waitSeconds(1.5)
-                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
-                        .waitSeconds(1)
-
-
-                        // Launch End
-                        // Launch Start
                         .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
-
                         .stopAndAdd(new Intake(true, hardwareMap)) // start intake
                         .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
                         .waitSeconds(1.5)
@@ -87,7 +77,14 @@ public class blueThree extends LinearOpMode {
                         // Launch End
                         // Launch Start
                         .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
-
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
+                        .waitSeconds(1)
+                        // Launch End
+                        // Launch Start
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
                         .stopAndAdd(new Intake(true, hardwareMap)) // start intake
                         .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
                         .waitSeconds(1.5)

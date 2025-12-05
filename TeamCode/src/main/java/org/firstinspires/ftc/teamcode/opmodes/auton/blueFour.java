@@ -23,28 +23,33 @@ public class blueFour extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(new Pose2d(60, -12,Math.toRadians(180)))
                         .stopAndAdd(new OuttakeMotor(true,hardwareMap))
-
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
                         .strafeTo(new Vector2d(-24, -27))
                         .turnTo(Math.toRadians(255))
 
                         .waitSeconds(1)
 
                         // Launch Start
-                        
-                        .waitSeconds(0.7)
-                        
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        
-                        .waitSeconds(0.7)
-                        
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        
-                        .waitSeconds(0.7)
-                        
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
                         .waitSeconds(1)
                         // Launch End
                         .turnTo(Math.toRadians(270))
@@ -57,22 +62,29 @@ public class blueFour extends LinearOpMode {
                         .waitSeconds(1)
 
                         // Launch Start
-                        
-                        .waitSeconds(0.7)
-                        
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        
-                        .waitSeconds(0.7)
-                        
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        
-                        .waitSeconds(0.7)
-                        
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
                         .waitSeconds(1)
+                        // Launch End
 
                         .strafeTo(new Vector2d(24,0))
                         .turnTo(Math.toRadians(90))

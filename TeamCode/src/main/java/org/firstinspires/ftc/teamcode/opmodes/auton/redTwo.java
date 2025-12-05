@@ -24,54 +24,62 @@ public class redTwo extends LinearOpMode {
                 drive.actionBuilder(new Pose2d(60, 12,Math.toRadians(171.870)))
                         .strafeTo(new Vector2d(-24, 24))
                         .turnTo(Math.toRadians(135))
-
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
                         .stopAndAdd(new OuttakeMotor(true,hardwareMap))
                         .waitSeconds(3)
-
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
-                        .waitSeconds(2)
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
+                        .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
-                        .waitSeconds(2)
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
+                        .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
-                        .waitSeconds(2)
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
+                        .waitSeconds(1)
                         // Launch End
                         .turnTo(Math.toRadians(90))
                         .strafeTo(new Vector2d(-12,24))
                         .strafeTo(new Vector2d(-12,52))
                         .strafeTo(new Vector2d(-24, 24))
                         .turnTo(Math.toRadians(135))
-
-
                         .waitSeconds(1)
-
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
                         .waitSeconds(1)
+                        // Launch End
 
                         .strafeTo(new Vector2d(24,0))
                         .turnTo(Math.toRadians(90))

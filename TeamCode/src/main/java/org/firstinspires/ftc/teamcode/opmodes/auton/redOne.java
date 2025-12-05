@@ -22,6 +22,7 @@ public class redOne extends LinearOpMode {
 
         Actions.runBlocking(
                 drive.actionBuilder(new Pose2d(-54, 54,Math.toRadians(315)))
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
                         .strafeTo(new Vector2d(-24, 24))
                         .turnTo(Math.toRadians(135))
 
@@ -29,22 +30,27 @@ public class redOne extends LinearOpMode {
                         .waitSeconds(3)
 
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
-                        .waitSeconds(2)
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
+                        .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
-                        .waitSeconds(2)
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
+                        .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
-                        .waitSeconds(2)
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
+                        .waitSeconds(1)
                         // Launch End
                         .turnTo(Math.toRadians(90))
                         .strafeTo(new Vector2d(-12,24))
@@ -56,22 +62,29 @@ public class redOne extends LinearOpMode {
                         .waitSeconds(1)
 
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
                         .waitSeconds(1)
                         // Launch End
                         // Launch Start
-                        .stopAndAdd(new OuttakeServo(false, hardwareMap))
-                        .waitSeconds(0.7)
-                        .stopAndAdd(new OuttakeServo(true, hardwareMap))
+                        .stopAndAdd(new OuttakeServo(true, hardwareMap)) // close gate
+                        .stopAndAdd(new Intake(true, hardwareMap)) // start intake
+                        .stopAndAdd(new OuttakeMotor(true, hardwareMap)) // start outtake
+                        .waitSeconds(1.5)
+                        .stopAndAdd(new OuttakeServo(false, hardwareMap)) // open gate
                         .waitSeconds(1)
+                        // Launch End
 
                         //parking
                         .strafeTo(new Vector2d(24,0))
