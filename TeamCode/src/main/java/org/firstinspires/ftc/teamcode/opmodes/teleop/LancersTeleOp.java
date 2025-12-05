@@ -52,10 +52,12 @@ public class LancersTeleOp extends LinearOpMode {
         rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
 
         //outtake
-        final DcMotor outtakeMotor = hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR);
+        final DcMotorEx outtakeMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR);
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        final DcMotor outtakeMotorTwo = hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR_TWO);
+        final DcMotorEx outtakeMotorTwo = (DcMotorEx)hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR_TWO);
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        final double TICKS_PER_REV = 1534.4; // CHANGE THIS DEPENDING ON THE MOTOR MODEL!!!!
 
         final Servo outtakeServo = hardwareMap.servo.get(LancersBotConfig.OUTTAKE_SERVO);
 
@@ -86,6 +88,21 @@ public class LancersTeleOp extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
+            // OUTTAKE MOTOR STUFF (STILL NEED TO BE TESTED)
+            double outtakeTicksPerSec = outtakeMotor.getVelocity();
+            double outtakeRPM1 = (outtakeTicksPerSec / TICKS_PER_REV) * 60.0;
+            double outtakeTicksPerSec2 = outtakeMotorTwo.getVelocity();
+            double outtakeRPM2 = (outtakeTicksPerSec2 / TICKS_PER_REV) * 60.0;
+
+            telemetry.addData("Outtake 1 RPM: ", outtakeRPM1);
+            telemetry.addData("Outtake 2 RPM: ", outtakeRPM2);
+
+            if(outtakeRPM1 >= 90 || outtakeRPM2 >= 90) {
+                // vibrate the gamepads
+//                gamepad1.rumble(500);
+//                gamepad2.rumble(500);
+            }
+
             currentRunTimeStamp = System.currentTimeMillis();
 
             // movement
