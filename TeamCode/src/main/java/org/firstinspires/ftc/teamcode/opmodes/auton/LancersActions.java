@@ -81,6 +81,10 @@ class OuttakeMotor implements Action {
 
         this.outtakeMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR);
         //this.outtakeMotorTwo = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR_TWO);
+
+        //Check the number of ticks in a single second
+        float ticksInASec = this.outtakeMotor.getPosition();
+
     }
 
     @Override

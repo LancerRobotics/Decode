@@ -8,17 +8,19 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 
-@Autonomous(name="blueNine")
-public class blueNine extends LinearOpMode {
+@Autonomous(name="blueCloseNine")
+public class blueCloseNine extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(-54, -54,Math.toRadians(225)));
         // initial position
 
+
+
         Movement movement = new Movement(hardwareMap);
 
-        Vector2d launchPoint = new Vector2d(-24,-24);
+        Vector2d launchPoint = new Vector2d(-12,-12);
 
         waitForStart(); // Required for all autons and teleops
 
@@ -41,12 +43,12 @@ public class blueNine extends LinearOpMode {
 
                         // Go to first ball area and intake 3
                         .turnTo(Math.toRadians(-90))
-                        .strafeTo(new Vector2d(-9,-24))
+                        .strafeTo(new Vector2d(-12,-24))
                         .stopAndAdd(new Intake(true, hardwareMap))
-                        .strafeTo(new Vector2d(-9,-66))
+                        .strafeTo(new Vector2d(-12,-53))
 
                        // Strafe to shooting position
-                        .strafeTo(new Vector2d(-24, -24))
+                        .strafeTo(launchPoint)
                         .turnTo(Math.toRadians(225))
 
                         // Shoot 3
@@ -60,12 +62,12 @@ public class blueNine extends LinearOpMode {
 
                         // Go to second ball area and intake 3
                         .turnTo(Math.toRadians(-90))
-                        .strafeTo(new Vector2d(9,-24))
+                        .strafeTo(new Vector2d(12,-24))
                         .stopAndAdd(new Intake(true, hardwareMap))
-                        .strafeTo(new Vector2d(9,-66))
+                        .strafeTo(new Vector2d(12,-53))
 
                         // Strafe to shooting position
-                        .strafeTo(new Vector2d(-24, -24))
+                        .strafeTo(launchPoint)
                         .turnTo(Math.toRadians(225))
 
                         // Shoot 3
