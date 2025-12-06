@@ -60,7 +60,7 @@ class Intake implements Action {
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
         if (running) {
-            intakeMotor.setPower(1);
+            intakeMotor.setPower(0.75);
         } else {
             intakeMotor.setPower(0);
         }
@@ -80,16 +80,42 @@ class OuttakeMotor implements Action {
         this.hardwareMap = hardwareMap;
 
         this.outtakeMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR);
-        this.outtakeMotorTwo = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR_TWO);
+        //this.outtakeMotorTwo = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR_TWO);
     }
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
         if (running) {
             outtakeMotor.setPower(1);
-            outtakeMotorTwo.setPower(-1);
+            //outtakeMotorTwo.setPower(-1);
+            //outtakeMotorTwo.setPower(-0.5);
         } else {
             outtakeMotor.setPower(0);
+            //outtakeMotorTwo.setPower(0);
+        }
+        return false;
+    }
+}
+
+class OuttakeMotorTwo implements Action {
+    private HardwareMap hardwareMap;
+    private boolean running = false;
+
+    private DcMotorEx outtakeMotorTwo;
+
+    public OuttakeMotorTwo(boolean running, HardwareMap hardwareMap) {
+        this.running = running;
+        this.hardwareMap = hardwareMap;
+
+        this.outtakeMotorTwo = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR_TWO);
+    }
+
+    @Override
+    public boolean run(@NonNull TelemetryPacket packet) {
+        if (running) {
+            //outtakeMotorTwo.setPower(-1);
+            outtakeMotorTwo.setPower(-0.5);
+        } else {
             outtakeMotorTwo.setPower(0);
         }
         return false;

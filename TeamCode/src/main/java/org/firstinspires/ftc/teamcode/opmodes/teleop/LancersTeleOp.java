@@ -32,6 +32,7 @@ public class LancersTeleOp extends LinearOpMode {
     private boolean lastRight = false;
     private boolean lastY = false;
     private boolean lastServo = false;
+    private boolean lastOuttakeTwo = false;
 
 
 
@@ -166,8 +167,18 @@ public class LancersTeleOp extends LinearOpMode {
             lastLeft = left;
             lastRight = right;
 
+            if (gamepad2.left_bumper && !lastOuttakeTwo) {
+                if (outtakeTwoPower == 0){
+                    outtakeTwoPower = -0.5;
+                }
+                else {
+                    outtakeTwoPower = 0;
+                }
+            }
+            lastOuttakeTwo = gamepad2.left_bumper;
+
             intakeMotor.setPower(intakePower*intakeDirection);
-            outtakeMotorTwo.setPower(((gamepad2.right_trigger>0)?-0.5:0));
+            outtakeMotorTwo.setPower(outtakeTwoPower);
             outtakeMotor.setPower(((gamepad2.right_trigger>0)?1:0));
 
             //else if (respectDeadZones(gamepad1.right_trigger) > 0){
@@ -179,16 +190,16 @@ public class LancersTeleOp extends LinearOpMode {
 
 
 
-            if (gamepad2.right_bumper && !lastServo){
-                if (servoPosition == 0.35){
-                    servoPosition=0.55;
+            if (gamepad2.right_bumper && !lastServo) {
+                if (servoPosition == 0.35) {
+                    servoPosition = 0.55;
                     outtakeServo.setPosition(0.55); // close position, ready to intake
-                }
-                else {
-                    servoPosition=0.35;
+                } else {
+                    servoPosition = 0.35;
                     outtakeServo.setPosition(0.35); // open position, ready to launch
                 }
             }
+
 
 
 
