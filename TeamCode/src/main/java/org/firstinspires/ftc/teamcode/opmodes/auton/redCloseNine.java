@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 
-@Autonomous(name="blueCloseNine")
+@Autonomous(name="redCloseNine")
 public class redCloseNine extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
