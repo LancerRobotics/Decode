@@ -16,58 +16,8 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-52, 51,Math.toRadians(315))) // Strafe to shooting position
-                //.stopAndAdd(new Intake(true, hardwareMap))
-                .strafeTo(launchPoint)
-
-                // Shoot 3
-               // .stopAndAdd(new OuttakeMotor(true,hardwareMap))
-                .waitSeconds(0.5)
-               // .stopAndAdd(new OuttakeMotorTwo(true,hardwareMap))
-                .waitSeconds(3)
-               // .stopAndAdd(new OuttakeMotor(false,hardwareMap))
-               // .stopAndAdd(new OuttakeMotorTwo(false,hardwareMap))
-
-                // Go to first ball area and intake 3
-                .turnTo(Math.toRadians(-270))
-                .strafeTo(new Vector2d(-8,24))
-                .strafeTo(new Vector2d(-8,58))
-
-                // Strafe to shooting position
-                .strafeTo(launchPoint)
-                .turnTo(Math.toRadians(315))
-
-                // Shoot 3
-               // .stopAndAdd(new OuttakeMotor(true,hardwareMap))
-                .waitSeconds(0.5)
-               // .stopAndAdd(new OuttakeMotorTwo(true,hardwareMap))
-                .waitSeconds(3)
-               // .stopAndAdd(new OuttakeMotor(false,hardwareMap))
-                //.stopAndAdd(new OuttakeMotorTwo(false,hardwareMap))
-
-                // Go to second ball area and intake 3
-                .turnTo(Math.toRadians(-270))
-                .strafeTo(new Vector2d(16,24))
-                .strafeTo(new Vector2d(16,58))
-
-                // Strafe to shooting position
-                .strafeTo(launchPoint)
-                .turnTo(Math.toRadians(315))
-
-                // Shoot 3
-                //.stopAndAdd(new OuttakeMotor(true,hardwareMap))
-                .waitSeconds(0.5)
-                //.stopAndAdd(new OuttakeMotorTwo(true,hardwareMap))
-                .waitSeconds(3)
-                //.stopAndAdd(new OuttakeMotor(false,hardwareMap))
-                //.stopAndAdd(new OuttakeMotorTwo(false,hardwareMap))
-
-                // Strafe to final position and end auton
-                .strafeTo(new Vector2d(-24,50))
-                //.turnTo(Math.toRadians(-90))
-                //.stopAndAdd(new OuttakeMotor(false,hardwareMap))
-                //.stopAndAdd(new OuttakeMotorTwo(false,hardwareMap))
-
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, 0,Math.toRadians(0))) // Strafe to shooting position
+                .strafeTo(new Vector2d(24, 0))
                 .build()
 
         );
