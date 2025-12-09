@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -7,12 +9,17 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.LancersBotConfig;
+
 
 // hi
 @TeleOp()
 public class LancersTeleOp extends LinearOpMode {
+
+    private Limelight3A limelight;
+
     public static final String TAG = "LancerTeleOp";
     private long currentRunTimeStamp = -1;
     private long timeStampAtLastOpModeRun = -1;
@@ -27,17 +34,41 @@ public class LancersTeleOp extends LinearOpMode {
     // INTAKE VARIABLES
     private double intakeDirection = 1; // +1 or -1
     private double intakePower = 0; // 0 or 1
+    private double outtakePower = 0;
     private double outtakeTwoPower = 0; // 0 or 1
     private boolean lastLeft = false;
     private boolean lastRight = false;
     private boolean lastY = false;
     private boolean lastServo = false;
     private boolean lastOuttakeTwo = false;
+    private boolean lastOuttake = false;
 
 
 
     @Override
     public void runOpMode() throws InterruptedException  {
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+
+        telemetry.setMsTransmissionInterval(11);
+
+        limelight.pipelineSwitch(0);
+
+        /*
+         * Starts polling for data.
+         */
+        limelight.start();
+
+        while (opModeIsActive()) {
+            LLResult result = limelight.getLatestResult();
+            if (result != null) {
+                if (result.isValid()) {
+                    Pose3D botpose = result.getBotpose();
+                    telemetry.addData("tx", result.getTx());
+                    telemetry.addData("ty", result.getTy());
+                    telemetry.addData("Botpose", botpose.toString());
+                }
+            }
+        }
         // Get from hardwaremap, initialize variables as DcMotor type
         final DcMotorEx leftFront = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -70,6 +101,7 @@ public class LancersTeleOp extends LinearOpMode {
         lastLock = false;
 
         intakePower = 0;
+        outtakePower = 0;
         outtakeTwoPower = 0;
         intakeDirection = 1;
 
@@ -167,7 +199,7 @@ public class LancersTeleOp extends LinearOpMode {
             lastLeft = left;
             lastRight = right;
 
-            if (gamepad2.left_bumper && !lastOuttakeTwo) {
+            if (gamepad2.right_bumper && !lastOuttakeTwo) {
                 if (outtakeTwoPower == 0){
                     outtakeTwoPower = -0.5;
                 }
@@ -175,11 +207,25 @@ public class LancersTeleOp extends LinearOpMode {
                     outtakeTwoPower = 0;
                 }
             }
-            lastOuttakeTwo = gamepad2.left_bumper;
+            lastOuttakeTwo = gamepad2.right_bumper;
+
+            double ticksPerSec = outtakeMotor.getVelocity(AngleUnit.DEGREES);
+
+            if ((respectDeadZones(gamepad2.right_trigger)>0) && !lastOuttake) {
+                outtakePower = 0.9;
+            }
+            if (!(respectDeadZones(gamepad2.right_trigger)>0)) {
+                outtakePower = 0;
+            }
+            lastOuttake = (respectDeadZones(gamepad2.right_trigger)>0);
+
+            if (ticksPerSec>260){
+                outtakePower -= 0.001;
+            }
 
             intakeMotor.setPower(intakePower*intakeDirection);
             outtakeMotorTwo.setPower(outtakeTwoPower);
-            outtakeMotor.setPower(((gamepad2.right_trigger>0)?1:0));
+            outtakeMotor.setPower(outtakePower);
 
             //else if (respectDeadZones(gamepad1.right_trigger) > 0){
             //    intakeMotor.setPower((-gamepad1.right_trigger));
@@ -190,20 +236,20 @@ public class LancersTeleOp extends LinearOpMode {
 
 
 
-            if (gamepad2.right_bumper && !lastServo) {
-                if (servoPosition == 0.35) {
+            if (gamepad2.left_bumper && !lastServo) {
+                if (servoPosition == 0.80) {
                     servoPosition = 0.55;
                     outtakeServo.setPosition(0.55); // close position, ready to intake
                 } else {
-                    servoPosition = 0.35;
-                    outtakeServo.setPosition(0.35); // open position, ready to launch
+                    servoPosition = 0.80;
+                    outtakeServo.setPosition(0.80); // open position, ready to launch
                 }
             }
 
 
 
 
-            lastServo = gamepad2.right_bumper;
+            lastServo = gamepad2.left_bumper;
 
             //Speed multipliers by .9, reduces speed of motor
             //Motors get very funky when running at maximum capacity, cap their speed
@@ -222,6 +268,8 @@ public class LancersTeleOp extends LinearOpMode {
             //telemetry.addData("X-value", parallelEncoder.getCurrentPosition());
             //telemetry.addData("Y-value", perpendicularEncoder.getCurrentPosition());
 
+            telemetry.addData("Ticks per second", ticksPerSec);
+
             telemetry.addLine("Speed Lock: " + (fullSpeedLock ? "On" : "Off"));
             telemetry.addLine("Speed Multiplier: " + ((speedMultiplier==1.0d) ? "Toggle On" : "Toggle Off"));
             telemetry.addLine("Second Outtake Motor Power: " + outtakeTwoPower);
@@ -229,10 +277,10 @@ public class LancersTeleOp extends LinearOpMode {
             telemetry.addLine("Intake Direction: " + ((intakeDirection==1)? "In" : "Out"));
             telemetry.addLine("Servo Position: "+servoPosition);
 
-            telemetry.addLine("Front Left Current: " + leftFront.getCurrent(CurrentUnit.AMPS));
-            telemetry.addLine("Front Right Current: " + rightFront.getCurrent(CurrentUnit.AMPS));
-            telemetry.addLine("Back Left Current: " + leftRear.getCurrent(CurrentUnit.AMPS));
-            telemetry.addLine("Back Right Current: " + rightRear.getCurrent(CurrentUnit.AMPS));
+            //telemetry.addLine("Front Left Current: " + leftFront.getCurrent(CurrentUnit.AMPS));
+            //telemetry.addLine("Front Right Current: " + rightFront.getCurrent(CurrentUnit.AMPS));
+            //telemetry.addLine("Back Left Current: " + leftRear.getCurrent(CurrentUnit.AMPS));
+            //telemetry.addLine("Back Right Current: " + rightRear.getCurrent(CurrentUnit.AMPS));
 
             telemetry.update();
         }
