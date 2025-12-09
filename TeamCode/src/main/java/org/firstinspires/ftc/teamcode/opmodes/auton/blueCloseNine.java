@@ -20,7 +20,9 @@ public class blueCloseNine extends LinearOpMode {
 
         Movement movement = new Movement(hardwareMap);
 
-        Vector2d launchPoint = new Vector2d(-24,-24);
+
+
+        Vector2d launchPoint = new Vector2d(-28,-28);
 
         waitForStart(); // Required for all autons and teleops
 
@@ -42,8 +44,8 @@ public class blueCloseNine extends LinearOpMode {
 
                         // Go to first ball area and intake 3
                         .turnTo(Math.toRadians(-90))
-                        .strafeTo(new Vector2d(-9,-24)) // -8 on V 12.2
-                        .strafeTo(new Vector2d(-9,-58)) // -8 on V 12.2
+                        .strafeTo(new Vector2d(-15,-24)) // -8 on V 12.2
+                        .strafeTo(new Vector2d(-15,-58)) // -8 on V 12.2
 
                        // Strafe to shooting position
                         .strafeTo(launchPoint)
@@ -59,9 +61,9 @@ public class blueCloseNine extends LinearOpMode {
 
                         // Go to second ball area and intake 3
                         .turnTo(Math.toRadians(-90))
-                        .strafeTo(new Vector2d(15,-24)) // 16 on V 12.2
-                        .strafeTo(new Vector2d(15,-58)) // 16 on V 12.2
-
+                        .strafeTo(new Vector2d(9,-24))// 16 on V 12.2
+                        .strafeTo(new Vector2d(9,-58)) // 16 on V 12.2
+                        .strafeTo(new Vector2d(9,-24))
                         // Strafe to shooting position
                         .strafeTo(launchPoint)
                         .turnTo(Math.toRadians(225))
