@@ -6,7 +6,10 @@ import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.LancersBotConfig;
+import org.firstinspires.ftc.robotcontroller.external.samples.ConceptTelemetry;
 
 class Movement implements Action {
     private HardwareMap hardwareMap;
@@ -74,23 +77,34 @@ class OuttakeMotor implements Action {
 
     private DcMotorEx outtakeMotor;
     private DcMotorEx outtakeMotorTwo;
+    private Telemetry telemetry;
+    private double outtakePower;
 
     public OuttakeMotor(boolean running, HardwareMap hardwareMap) {
         this.running = running;
         this.hardwareMap = hardwareMap;
 
+        this.outtakePower = 0.9;
+
         this.outtakeMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR);
         //this.outtakeMotorTwo = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR_TWO);
 
         //Check the number of ticks in a single second
-        float ticksInASec = this.outtakeMotor.getPosition();
-
     }
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
         if (running) {
-            outtakeMotor.setPower(1);
+            double ticksPerSec = this.outtakeMotor.getVelocity(AngleUnit.DEGREES);
+            //display ts
+            //this.telemetry.addData("Ticks per second", ticksPerSec);
+
+            outtakeMotor.setPower(this.outtakePower);
+
+            while (ticksPerSec>260){
+                ticksPerSec = this.outtakeMotor.getVelocity(AngleUnit.DEGREES);
+                outtakePower -= 0.001;
+            }
             //outtakeMotorTwo.setPower(-1);
             //outtakeMotorTwo.setPower(-0.5);
         } else {
