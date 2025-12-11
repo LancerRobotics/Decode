@@ -28,7 +28,7 @@ repositories {
         url = 'https://maven.brott.dev/'
     }
     maven {
-        url = 'https://maven.pedropathing.com/releases'
+        url = 'https://mymaven.bylazar.com/releases'
     }
 }
 
@@ -41,6 +41,9 @@ dependencies {
     implementation "com.acmerobotics.roadrunner:actions:1.0.1"
     implementation "com.acmerobotics.dashboard:dashboard:0.4.17"
     //If we use pedropathing, uncomment this
-    //implementation 'com.pedrogit.pedropathing:PedroPathing:2.0.4'
-    //implementation 'com.pedrogit.pedropathing:telemetry:2.0.4'
+    /*
+    implementation 'com.pedropathing:ftc:2.0.4'
+    implementation 'com.pedropathing:telemetry:1.0.0'
+    implementation 'com.bylazar:fullpanels:1.0.6'
+     */
 }
