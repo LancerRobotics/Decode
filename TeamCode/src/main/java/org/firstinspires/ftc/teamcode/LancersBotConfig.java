@@ -17,4 +17,6 @@ LancersBotConfig {
     public final static String IMU = "imu_ex"; // Expansion Hub IMU
 
     public final static String LIMELIGHT = "LIMELIGHT";
+
+    public final static String PINPOINT = "PINPOINT";
 }
