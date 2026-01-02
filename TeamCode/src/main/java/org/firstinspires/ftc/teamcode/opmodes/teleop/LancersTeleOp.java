@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -42,14 +44,12 @@ public class LancersTeleOp extends LinearOpMode {
     private boolean lastServo = false;
     private boolean lastOuttakeTwo = false;
     private boolean lastOuttake = false;
-
+    private double outtakeMotorLine = 0;
 
 
     @Override
     public void runOpMode() throws InterruptedException  {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-
-        telemetry.setMsTransmissionInterval(11);
 
         limelight.pipelineSwitch(0);
 
@@ -57,6 +57,12 @@ public class LancersTeleOp extends LinearOpMode {
          * Starts polling for data.
          */
         limelight.start();
+
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+        telemetry.setMsTransmissionInterval(50); // around 20 hZ
+
+
 
         while (opModeIsActive()) {
             LLResult result = limelight.getLatestResult();
@@ -93,9 +99,9 @@ public class LancersTeleOp extends LinearOpMode {
 
         final Servo outtakeServo = hardwareMap.servo.get(LancersBotConfig.OUTTAKE_SERVO);
 
-        servoPosition = 0.55;
+        servoPosition = 0;
 
-        outtakeServo.setPosition(0.55); // servo intital position
+        outtakeServo.setPosition(0); // servo intital position
 
         fullSpeedLock = false;
         lastLock = false;
@@ -130,11 +136,11 @@ public class LancersTeleOp extends LinearOpMode {
             telemetry.addData("Outtake 1 RPM: ", outtakeRPM1);
             telemetry.addData("Outtake 2 RPM: ", outtakeRPM2);
 
-            if(outtakeRPM1 >= 90 || outtakeRPM2 >= 90) {
-                // vibrate the gamepads
-//                gamepad1.rumble(500);
-//                gamepad2.rumble(500);
-            }
+            /*if(outtakeRPM1 >= 90 || outtakeRPM2 >= 90) {
+                //vibrate the gamepads
+                gamepad1.rumble(500);
+                gamepad2.rumble(500);
+            }*/
 
             currentRunTimeStamp = System.currentTimeMillis();
 
@@ -169,7 +175,6 @@ public class LancersTeleOp extends LinearOpMode {
 
             boolean left = gamepad1.left_bumper;     // on/off toggle
             boolean right = gamepad1.right_bumper;   // direction toggle
-            //boolean y_button = gamepad2.y;
 
             // INTAKE ON/OFF (left bumper)
             if (left && !lastLeft) {
@@ -181,15 +186,16 @@ public class LancersTeleOp extends LinearOpMode {
                 }
             }
 
-            // SECOND OUTTAKE MOTOR TOGGLE (y button)
-            //if (y_button && !lastY) {
-            //    if (outtakeTwoPower == 0){
-            //      outtakeTwoPower = 1;
-            //    }
-            //    else {
-            //        outtakeTwoPower = 0;
-            //    }
-            //}
+            /*
+            //SECOND OUTTAKE MOTOR TOGGLE (y button)
+            if (y_button && !lastY) {
+                if (outtakeTwoPower == 0){
+                  outtakeTwoPower = 1;
+                }
+                else {
+                    outtakeTwoPower = 0;
+                }
+            }*/
 
             // INTAKE DIRECTION (right bumper)
             if (right && !lastRight) {
@@ -199,7 +205,7 @@ public class LancersTeleOp extends LinearOpMode {
             lastLeft = left;
             lastRight = right;
 
-            if (gamepad2.right_bumper && !lastOuttakeTwo) {
+            /*if (gamepad2.right_bumper && !lastOuttakeTwo) {
                 if (outtakeTwoPower == 0){
                     outtakeTwoPower = -0.5;
                 }
@@ -207,17 +213,21 @@ public class LancersTeleOp extends LinearOpMode {
                     outtakeTwoPower = 0;
                 }
             }
-            lastOuttakeTwo = gamepad2.right_bumper;
+            lastOuttakeTwo = gamepad2.right_bumper;*/
 
             double ticksPerSec = outtakeMotor.getVelocity(AngleUnit.DEGREES);
 
-            if ((respectDeadZones(gamepad2.right_trigger)>0) && !lastOuttake) {
+            /*if ((respectDeadZones(gamepad2.right_trigger)>0) && !lastOuttake) {
                 outtakePower = 0.9;
             }
             if (!(respectDeadZones(gamepad2.right_trigger)>0)) {
                 outtakePower = 0;
             }
             lastOuttake = (respectDeadZones(gamepad2.right_trigger)>0);
+            */
+            if (gamepad2.rightBumperWasPressed()){
+                outtakePower = (outtakePower == 0.95 ? 0 : 0.95);
+            }
 
             if (ticksPerSec>260){
                 outtakePower -= 0.001;
@@ -237,19 +247,21 @@ public class LancersTeleOp extends LinearOpMode {
 
 
             if (gamepad2.left_bumper && !lastServo) {
-                if (servoPosition == 0.80) {
-                    servoPosition = 0.55;
-                    outtakeServo.setPosition(0.55); // close position, ready to intake
+                if (servoPosition == 0) {
+                    servoPosition = 0.5;
+                    outtakeServo.setPosition(0.5); // close position, ready to intake
                 } else {
-                    servoPosition = 0.80;
-                    outtakeServo.setPosition(0.80); // open position, ready to launch
+                    servoPosition = 0;
+                    outtakeServo.setPosition(0); // open position, ready to launch
                 }
             }
 
-
-
-
             lastServo = gamepad2.left_bumper;
+
+
+            if (gamepad2.yWasPressed()){
+                outtakeMotorLine = ticksPerSec;
+            }
 
             //Speed multipliers by .9, reduces speed of motor
             //Motors get very funky when running at maximum capacity, cap their speed
@@ -277,10 +289,14 @@ public class LancersTeleOp extends LinearOpMode {
             telemetry.addLine("Intake Direction: " + ((intakeDirection==1)? "In" : "Out"));
             telemetry.addLine("Servo Position: "+servoPosition);
 
-            //telemetry.addLine("Front Left Current: " + leftFront.getCurrent(CurrentUnit.AMPS));
-            //telemetry.addLine("Front Right Current: " + rightFront.getCurrent(CurrentUnit.AMPS));
-            //telemetry.addLine("Back Left Current: " + leftRear.getCurrent(CurrentUnit.AMPS));
-            //telemetry.addLine("Back Right Current: " + rightRear.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("TPS at a certain moment", outtakeMotorLine);
+
+            /*
+            telemetry.addLine("Front Left Current: " + leftFront.getCurrent(CurrentUnit.AMPS));
+            telemetry.addLine("Front Right Current: " + rightFront.getCurrent(CurrentUnit.AMPS));
+            telemetry.addLine("Back Left Current: " + leftRear.getCurrent(CurrentUnit.AMPS));
+            telemetry.addLine("Back Right Current: " + rightRear.getCurrent(CurrentUnit.AMPS));
+             */
 
             telemetry.update();
         }

@@ -34,16 +34,15 @@ repositories {
 
 dependencies {
     implementation project(':FtcRobotController')
+    /*
     implementation 'org.apache.commons:commons-math3:3.6.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
     implementation "com.acmerobotics.roadrunner:ftc:0.1.23"
     implementation "com.acmerobotics.roadrunner:core:1.0.1"
     implementation "com.acmerobotics.roadrunner:actions:1.0.1"
+    */
     implementation "com.acmerobotics.dashboard:dashboard:0.4.17"
-    //If we use pedropathing, uncomment this
-    /*
     implementation 'com.pedropathing:ftc:2.0.4'
     implementation 'com.pedropathing:telemetry:1.0.0'
     implementation 'com.bylazar:fullpanels:1.0.6'
-     */
 }

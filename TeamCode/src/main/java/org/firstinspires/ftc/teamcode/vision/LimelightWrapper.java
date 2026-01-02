@@ -4,10 +4,11 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.LancersBotConfig;
 
-import com.acmerobotics.roadrunner.Pose2d;
+import com.pedropathing.geometry.Pose;
 
 import java.util.List;
 
@@ -15,19 +16,20 @@ public class LimelightWrapper {
 
     private final Limelight3A limelight;
 
+    // center of an FTC field (in inches) for pedro is (72, 72), for limelight its (0,0)
+    private static final double PEDRO_X_OFFSET_IN = 72.0;
+    private static final double PEDRO_Y_OFFSET_IN = 72.0;
+
     public LimelightWrapper(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, LancersBotConfig.LIMELIGHT);
-        limelight.pipelineSwitch(0); // TODO: Change this pipeline to the correct pipeline later
-        limelight.start(); // Start polling
+        limelight.pipelineSwitch(2); // TODO: Change this pipeline to the correct pipeline later
+        limelight.start();
     }
 
-    /**
-     * Returns the robot pose as a RoadRunner Pose2d (in inches, heading in radians)
-     * Returns null if no valid fiducial/pose data
-     */
-    public Pose2d getBotPose() {
+    // returns a 2D pose with heading (in radians) if an april tag is found
+    public Pose getBotPose() {
         LLResult result = limelight.getLatestResult();
-        if (result == null || !result.isValid()){ // should only return a value if it can find april tags
+        if (result == null || !result.isValid()) {
             return null;
         }
 
@@ -36,28 +38,35 @@ public class LimelightWrapper {
 
         for (LLResultTypes.FiducialResult fr : tags) {
             int id = fr.getFiducialId();
-
             if (id == 20 || id == 24) {
                 validTagSeen = true;
                 break;
             }
         }
 
-        if (!validTagSeen) {
-            return null;
-        }
+        if (!validTagSeen) return null;
 
         Pose3D botpose = result.getBotpose();
-        if (botpose == null){
-            return null;
-        }
-        double xIn = botpose.getPosition().x * 39.37; // convert from meters to inches
+        if (botpose == null) return null;
+
+        // convert meters to inches
+        double xIn = botpose.getPosition().x * 39.37;
         double yIn = botpose.getPosition().y * 39.37;
-        double headingRad = Math.toRadians(botpose.getOrientation().getYaw()); // rotation around vertical axis
-        return new Pose2d(xIn, yIn, headingRad);
+
+        // Convert yaw degrees -> radians for pedro
+        double headingRad = Math.toRadians(botpose.getOrientation().getYaw());
+
+        xIn += PEDRO_X_OFFSET_IN;
+        yIn += PEDRO_Y_OFFSET_IN;
+
+        return new Pose(xIn, yIn, headingRad);
     }
 
     public void stop() {
         limelight.stop();
+    }
+
+    public LLResult getLatestResult() {
+        return limelight.getLatestResult();
     }
 }
