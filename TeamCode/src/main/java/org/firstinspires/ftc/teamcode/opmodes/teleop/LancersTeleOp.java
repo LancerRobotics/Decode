@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.LancersBotConfig;
+import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
 
 
 // hi
@@ -75,6 +76,14 @@ public class LancersTeleOp extends LinearOpMode {
                 }
             }
         }
+
+        LimelightWrapper myLimelight = new LimelightWrapper(hardwareMap);
+        while (opModeIsActive()) {
+            double distance = myLimelight.getDistanceToTag();
+            telemetry.addData("Distance (inches)", distance);
+            telemetry.update();
+        }
+
         // Get from hardwaremap, initialize variables as DcMotor type
         final DcMotorEx leftFront = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);

@@ -19,7 +19,7 @@ public class LimelightWrapper {
     // center of an FTC field (in inches) for pedro is (72, 72), for limelight its (0,0)
     private static final double PEDRO_X_OFFSET_IN = 72.0;
     private static final double PEDRO_Y_OFFSET_IN = 72.0;
-
+    private static double tagId;
     public LimelightWrapper(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, LancersBotConfig.LIMELIGHT);
         limelight.pipelineSwitch(2); // TODO: Change this pipeline to the correct pipeline later
@@ -40,6 +40,7 @@ public class LimelightWrapper {
             int id = fr.getFiducialId();
             if (id == 20 || id == 24) {
                 validTagSeen = true;
+                tagId = id;
                 break;
             }
         }
@@ -60,6 +61,34 @@ public class LimelightWrapper {
         yIn += PEDRO_Y_OFFSET_IN;
 
         return new Pose(xIn, yIn, headingRad);
+    }
+
+    double tagX;
+    double tagY;
+
+    public double getDistanceToTag() {
+        Pose pose = this.getBotPose();
+        double botX = pose.getX();
+        double botY = pose.getY();
+
+        //replace these values with the coordinates of the actual apriltags respectively
+        if (tagId == 20)
+        {
+            //replace these numbers MAKE SURE TO USE INCHES
+            tagX = 0;
+            tagY = 0;
+        }
+        else if (tagId == 24) {
+            //replace these numbers MAKE SURE TO USE INCHES
+            tagX = 1;
+            tagY = 1;
+        }
+
+        if (pose == null) {
+            return -1.0;
+        }
+
+        return Math.hypot(tagX - botX, tagY - botY);
     }
 
     public void stop() {
