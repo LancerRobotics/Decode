@@ -6,10 +6,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -105,6 +102,10 @@ public class LancersTeleOp extends LinearOpMode {
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
         final double TICKS_PER_REV = 1534.4; // CHANGE THIS DEPENDING ON THE MOTOR MODEL!!!!
+
+        outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(100,0,0,19.8);
+        outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
         final Servo outtakeServo = hardwareMap.servo.get(LancersBotConfig.OUTTAKE_SERVO);
 
@@ -235,16 +236,20 @@ public class LancersTeleOp extends LinearOpMode {
             lastOuttake = (respectDeadZones(gamepad2.right_trigger)>0);
             */
             if (gamepad2.rightBumperWasPressed()){
-                outtakePower = (outtakePower == 0.95 ? 0 : 0.95);
+                outtakePower = (outtakePower == 1500 ? 0 : 1500);
+                outtakeMotor.setVelocity(outtakePower);
+                outtakeMotorLine = (outtakePower == 1500 ? 1500 : 0);
             }
 
+            /*
             if (ticksPerSec>260){
                 outtakePower -= 0.001;
             }
+            */
 
             intakeMotor.setPower(intakePower*intakeDirection);
             outtakeMotorTwo.setPower(outtakeTwoPower);
-            outtakeMotor.setPower(outtakePower);
+            //outtakeMotor.setPower(outtakePower);
 
             //else if (respectDeadZones(gamepad1.right_trigger) > 0){
             //    intakeMotor.setPower((-gamepad1.right_trigger));
@@ -268,10 +273,6 @@ public class LancersTeleOp extends LinearOpMode {
             lastServo = gamepad2.left_bumper;
 
 
-            if (gamepad2.yWasPressed()){
-                outtakeMotorLine = ticksPerSec;
-            }
-
             //Speed multipliers by .9, reduces speed of motor
             //Motors get very funky when running at maximum capacity, cap their speed
             leftFront.setPower(-frontLeftPower);
@@ -291,6 +292,9 @@ public class LancersTeleOp extends LinearOpMode {
 
             telemetry.addData("Ticks per second", ticksPerSec);
 
+            telemetry.addData("Target velocity", outtakeMotorLine);
+            telemetry.addData("Actual Velocity", outtakeMotor.getVelocity());
+
             telemetry.addLine("Speed Lock: " + (fullSpeedLock ? "On" : "Off"));
             telemetry.addLine("Speed Multiplier: " + ((speedMultiplier==1.0d) ? "Toggle On" : "Toggle Off"));
             telemetry.addLine("Second Outtake Motor Power: " + outtakeTwoPower);
@@ -298,7 +302,6 @@ public class LancersTeleOp extends LinearOpMode {
             telemetry.addLine("Intake Direction: " + ((intakeDirection==1)? "In" : "Out"));
             telemetry.addLine("Servo Position: "+servoPosition);
 
-            telemetry.addData("TPS at a certain moment", outtakeMotorLine);
 
             /*
             telemetry.addLine("Front Left Current: " + leftFront.getCurrent(CurrentUnit.AMPS));
