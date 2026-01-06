@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.LancersBotConfig;
 
-@TeleOp()
+@TeleOp(name="ServoCalibrator", group="tests")
 public class ServoCalibrator extends LinearOpMode {
-    public static final String TAG = "ServoCalibrator";
+    //public static final String TAG = "ServoCalibrator";
 
     @Override
     public void runOpMode() throws InterruptedException {
