@@ -22,7 +22,7 @@ public class LimelightWrapper {
     private static double tagId;
     public LimelightWrapper(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, LancersBotConfig.LIMELIGHT);
-        limelight.pipelineSwitch(2); // TODO: Change this pipeline to the correct pipeline later
+        limelight.pipelineSwitch(5); // TODO: Change this pipeline to the correct pipeline later
         limelight.start();
     }
 
