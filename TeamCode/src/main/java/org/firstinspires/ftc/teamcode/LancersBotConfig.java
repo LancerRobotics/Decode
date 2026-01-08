@@ -19,5 +19,5 @@ LancersBotConfig {
 
     public final static String LIMELIGHT = "limelight";
 
-    public final static String PINPOINT = "PINPOINT";
+    public final static String PINPOINT = "Buzzy x Meahul 6767";
 }
