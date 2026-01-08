@@ -36,12 +36,12 @@ public class exampleAuton extends OpMode {
     private PathChain driveStartPosShootPos, driveShootPosLeavePose;
 
     public void buildPaths() {
-        driveStartPosShootPos = follower.pathBuilder()
+        startPosToShootPos = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, shootPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
 
-        driveShootPosLeavePose = follower.pathBuilder()
+        shootPosToLeavePos = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, leavePose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), leavePose.getHeading())
                 .build();
@@ -50,8 +50,9 @@ public class exampleAuton extends OpMode {
     public void statePathUpdate() {
         switch(pathState) {
             case DRIVE_STARTPOS_SHOOTPOS:
-                follower.followPath(driveStartPosShootPos, true);
+                follower.followPath(startPosToShootPos, true);
                 pathState = PathState.SHOOT_TIME;
+
                 break;
             case SHOOT_TIME:
                 // add flywheel logic here
@@ -61,6 +62,7 @@ public class exampleAuton extends OpMode {
                 }
                 break;
             case DRIVE_SHOOTPOS_LEAVEPOS:
+                follower.followPath(shootPosToLeavePos, true);
                 if (!follower.isBusy()) {
                     telemetry.addLine("Auton Complete");
                 }
