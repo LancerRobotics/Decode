@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.LancersBotConfig;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(0); // TODO: set mass later
+            .mass(10.12);
 
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
@@ -42,8 +42,8 @@ public class Constants {
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD);
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(-5)
-            .strafePodX(0.5)
+            .forwardPodY(-6.5625)
+            .strafePodX(7.8125)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName(LancersBotConfig.PINPOINT)
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
