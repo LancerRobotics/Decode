@@ -17,7 +17,7 @@ public class LancersTeleOpController {
     private double outtakeTwoPower = 0.0; // 0.0 or 0.5
 
     // Servo state: 0.0 or 0.5 (your “open/closed” positions)
-    private double servoPos = 0.0;
+    private double servoPos = 1.0;
 
 
     public void loop(LancersRobot robot, Gamepad gamepad1, Gamepad gamepad2) {
@@ -57,7 +57,7 @@ public class LancersTeleOpController {
         robot.setOuttakeTwoPower(outtakeTwoPower);
 
         if (gamepad2.yWasPressed()) {
-            servoPos = (servoPos == 0.0) ? 0.5 : 0.0;
+            servoPos = (servoPos == 1.0) ? 0.4 : 1.0;
             robot.setServoPosition(servoPos);
         }
 

@@ -39,7 +39,7 @@ public class LancersRobot {
     private final Telemetry telemetry;
 
     // ---- STATE ----
-    private double servoPosition = 0.0;
+    private double servoPosition = 1.0;
     private double outtakeVelocity = 0.0;
     private double outtakeTwoPower = 0.0;
     private double intakePower = 0.0;
@@ -67,7 +67,7 @@ public class LancersRobot {
         rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
 
         intakeMotor = hardwareMap.dcMotor.get(LancersBotConfig.INTAKE_MOTOR);
-        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         outtakeMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR);
         outtakeMotorTwo = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR_TWO);
