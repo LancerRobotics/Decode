@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.LancersRobot;
+import org.firstinspires.ftc.teamcode.LancersTeleOpController;
 
 @TeleOp()
 public class LancersTeleOp extends LinearOpMode {
@@ -12,13 +13,15 @@ public class LancersTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         // Create robot once (hardwareMap + telemetry + gamepads)
-        LancersRobot robot = new LancersRobot(hardwareMap, telemetry, gamepad1, gamepad2);
+        LancersRobot robot = new LancersRobot(hardwareMap, telemetry);
+
+        LancersTeleOpController controller = new LancersTeleOpController();
 
         waitForStart();
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            robot.loop();
+            controller.loop(robot, gamepad1, gamepad2);
         }
     }
 }
