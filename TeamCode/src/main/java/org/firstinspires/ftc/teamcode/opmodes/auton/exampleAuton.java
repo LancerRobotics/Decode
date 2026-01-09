@@ -18,6 +18,8 @@ public class exampleAuton extends OpMode {
     private Follower follower;
     private Timer pathTimer, opModeTimer;
 
+    private LancersRobot robot;
+
     // --- STATE MACHINE ---
     public enum PathState {
         STARTPOS_TO_SHOOTPOS,
@@ -43,7 +45,7 @@ public class exampleAuton extends OpMode {
     private PathChain collectFirstBalls, collectSecondBalls, collectThirdBalls;
 
     // Timings
-    private static final double SHOOT_SECONDS = 1.0; // TODO: tune later
+    private static final double SHOOT_SECONDS = 2.0; // TODO: tune later
 
     public void buildPaths() {
         startPosToShootPos = follower.pathBuilder()
@@ -59,56 +61,45 @@ public class exampleAuton extends OpMode {
 
         // Collect 1
         collectFirstBalls = follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, new Pose(48.000, 92.000)))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(180))
                 .addPath(new BezierCurve(
-                        shootPose,
-                        new Pose(68.291, 82.036),
-                        new Pose(54.545, 82.018),
-                        new Pose(40.800, 82.000)
-                ))
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-                .addPath(new BezierCurve(
-                        new Pose(40.800, 82.000),
-                        new Pose(-10.000, 83.345),
-                        new Pose(15.000, 83.700),
+                        new Pose(48.000, 92.000),
+                        new Pose(32.924, 73.552),
+                        new Pose(14.000, 83.345),
                         shootPose
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
                 .build();
 
         // Collect 2
         collectSecondBalls = follower.pathBuilder()
+                .addPath(new BezierCurve(shootPose, new Pose(48.000, 68.000)))
+                .setLinearHeadingInterpolation(Math.toRadians(138), Math.toRadians(180))
                 .addPath(new BezierCurve(
-                        shootPose,
-                        new Pose(77.891, 61.527),
-                        new Pose(49.346, 59.764),
-                        new Pose(20.800, 58.000)
+                        new Pose(48.000, 68.000),
+                        new Pose(32.924, 49.552),
+                        new Pose(14.000, 59.345),
+                        new Pose(48.000, 68.000)
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-                .addPath(new BezierCurve(
-                        new Pose(20.800, 58.000),
-                        new Pose(49.527, 71.127),
-                        new Pose(49.763, 83.564),
-                        shootPose
-                ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(138))
+                .addPath(new BezierLine(new Pose(48.000, 68.000), shootPose))
+                .setConstantHeadingInterpolation(Math.toRadians(138))
                 .build();
 
         // Collect 3
         collectThirdBalls = follower.pathBuilder()
+                .addPath(new BezierCurve(shootPose, new Pose(48.000, 44.000)))
+                .setLinearHeadingInterpolation(Math.toRadians(138), Math.toRadians(180))
                 .addPath(new BezierCurve(
-                        shootPose,
-                        new Pose(83.127, 25.964),
-                        new Pose(51.964, 29.982),
-                        new Pose(20.800, 34.000)
+                        new Pose(48.000, 44.000),
+                        new Pose(32.924, 25.552),
+                        new Pose(14.000, 35.345),
+                        new Pose(48.000, 44.000)
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-                .addPath(new BezierCurve(
-                        new Pose(20.800, 34.000),
-                        new Pose(49.527, 71.127),
-                        new Pose(49.763, 83.564),
-                        shootPose
-                ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(138))
+                .addPath(new BezierLine(new Pose(48.000, 44.000), shootPose))
+                .setConstantHeadingInterpolation(Math.toRadians(138))
                 .build();
     }
 
@@ -132,6 +123,10 @@ public class exampleAuton extends OpMode {
         switch (pathState) {
 
             case STARTPOS_TO_SHOOTPOS: {
+                // start intake and outtake for the rest of the auton
+                robot.setOuttakeVelocity(1500);
+                robot.setIntake(1);
+
                 if (justEntered) {
                     follower.followPath(startPosToShootPos, true);
                     justEntered = false;
@@ -146,13 +141,12 @@ public class exampleAuton extends OpMode {
 
             case SHOOT: {
                 if (justEntered) {
-                    // TODO: start flywheel / feeder here
                     justEntered = false;
                 }
 
-                // TODO: keep shooter running here if needed
+                robot.setOuttakeTwoPower(0.5);
                 if (pathTimer.getElapsedTimeSeconds() >= SHOOT_SECONDS) {
-                    // TODO: stop feeder if needed
+                    robot.setOuttakeTwoPower(0);
                     if (cycleIndex < 3) {
                         setPathState(PathState.COLLECT); // Goes onto the next collect cycle
                     } else {
@@ -164,13 +158,11 @@ public class exampleAuton extends OpMode {
 
             case COLLECT: {
                 if (justEntered) {
-                    // TODO: start intake here
                     follower.followPath(getCollectPathForCycle(cycleIndex), true);
                     justEntered = false;
                 }
 
                 if (!follower.isBusy()) {
-                    // TODO: stop intake if needed
                     cycleIndex++; // Completed one cycle, going onto the next one
                     setPathState(PathState.SHOOT);
                 }
@@ -203,6 +195,8 @@ public class exampleAuton extends OpMode {
         opModeTimer = new Timer();
         opModeTimer.resetTimer();
 
+        robot = new LancersRobot(hardwareMap, telemetry);
+
         follower = Constants.createFollower(hardwareMap);
 
         buildPaths();
@@ -210,8 +204,6 @@ public class exampleAuton extends OpMode {
 
         setPathState(PathState.STARTPOS_TO_SHOOTPOS);
 
-        LancersRobot robot = new LancersRobot(hardwareMap, telemetry);
-        // TODO: initialize intake/outtake
     }
 
     @Override
