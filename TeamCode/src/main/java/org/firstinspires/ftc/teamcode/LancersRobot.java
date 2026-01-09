@@ -52,7 +52,15 @@ public class LancersRobot {
         telemetry.setMsTransmissionInterval(50);
 
         limelight = hardwareMap.get(Limelight3A.class, LancersBotConfig.LIMELIGHT);
-        limelight.pipelineSwitch(5);
+        limelight.pipelineSwitch(8);
+        /***
+        * LIMELIGHT PIPELINES:
+         * 0: Purple Balls
+         * 1: Green Balls
+         * 5: Testing LL tracking at Alan's house
+         * 8: LL tracking for blue
+         * 9: LL tracking for red
+         ***/
         limelight.start();
         limelightWrapper = new LimelightWrapper(hardwareMap);
 
