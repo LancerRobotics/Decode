@@ -47,6 +47,7 @@ public class Red12 extends OpMode {
     private static final double SHOOT_SECONDS = 2.0; // TODO: tune later
 
     public void buildPaths() {
+
         startPosToShootPos = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, shootPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
@@ -64,41 +65,58 @@ public class Red12 extends OpMode {
                 .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(0))
                 .addPath(new BezierCurve(
                         new Pose(96.000, 92.000),
-                        new Pose(111.076, 73.552),
-                        new Pose(130.000, 83.345),
-                        shootPose
+                        new Pose(111.076, 82.414),
+                        new Pose(130, 84.000)
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(0), shootPose.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                .addPath(new BezierLine(
+                        new Pose(101.000, 84.000),
+                        new Pose(126.11, 84.000)
+                )).setConstantHeadingInterpolation(Math.toRadians(0))
+                .addPath(new BezierLine(
+                        new Pose(126.11, 84),
+                        shootPose
+                )).setLinearHeadingInterpolation(Math.toRadians(0), shootPose.getHeading())
                 .build();
 
         // Collect 2
         collectSecondBalls = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, new Pose(96.000, 68.000)))
-                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                .addPath(new BezierLine(shootPose, new Pose(96.000, 92.000)))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(0))
                 .addPath(new BezierCurve(
-                        new Pose(96.000, 68.000),
-                        new Pose(111.076, 49.552),
-                        new Pose(130.000, 59.345),
-                        new Pose(96.000, 68.000)
+                        new Pose(96.000, 92.000),
+                        new Pose(94.059, 58),
+                        new Pose(101, 60.000)
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
-                .addPath(new BezierLine(new Pose(96.000, 68.000), shootPose))
-                .setConstantHeadingInterpolation(Math.toRadians(45))
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                .addPath(new BezierLine(
+                        new Pose(101.000, 60.000),
+                        new Pose(126.11, 60.000)
+                )).setConstantHeadingInterpolation(Math.toRadians(0))
+                .addPath(new BezierLine(
+                        new Pose(126.11, 60),
+                        shootPose
+                )).setLinearHeadingInterpolation(Math.toRadians(0), shootPose.getHeading())
                 .build();
 
         // Collect 3
         collectThirdBalls = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, new Pose(96.000, 44.000)))
-                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                .addPath(new BezierLine(shootPose, new Pose(96, 20.000)))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(0))
                 .addPath(new BezierCurve(
-                        new Pose(96.000, 44.000),
-                        new Pose(111.076, 25.552),
-                        new Pose(130.000, 35.345),
-                        new Pose(96.000, 44.000)
+                        new Pose(96, 20.000),
+                        new Pose(94.059, 58.414),
+                        new Pose(101, 60.000)
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
-                .addPath(new BezierLine(new Pose(96.000, 44.000), shootPose))
-                .setConstantHeadingInterpolation(Math.toRadians(45))
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                .addPath(new BezierLine(
+                        new Pose(101, 60.000),
+                        new Pose(126.11, 60.000)
+                )).setConstantHeadingInterpolation(Math.toRadians(0))
+                .addPath(new BezierLine(
+                        new Pose(126.11, 60),
+                        shootPose
+                )).setLinearHeadingInterpolation(Math.toRadians(0), shootPose.getHeading())
                 .build();
     }
 
@@ -118,10 +136,12 @@ public class Red12 extends OpMode {
         }
     }
 
+
     private void statePathUpdate() {
         switch (pathState) {
 
             case STARTPOS_TO_SHOOTPOS: {
+
                 // start intake and outtake for the rest of the auton
                 robot.setOuttakeVelocity(1500);
                 robot.setIntake(1);
@@ -143,7 +163,7 @@ public class Red12 extends OpMode {
                     justEntered = false;
                 }
 
-                robot.setOuttakeTwoPower(0.5);
+                robot.setOuttakeTwoPower(1);
                 if (pathTimer.getElapsedTimeSeconds() >= SHOOT_SECONDS) {
                     robot.setOuttakeTwoPower(0);
                     if (cycleIndex < 3) {
