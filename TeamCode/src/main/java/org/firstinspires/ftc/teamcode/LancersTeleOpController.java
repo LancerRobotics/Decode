@@ -50,7 +50,7 @@ public class LancersTeleOpController {
         }
 
         if (gamepad2.leftBumperWasPressed()) {
-            outtakeTwoPower = (outtakeTwoPower == 0.0) ? 0.5 : 0.0;
+            outtakeTwoPower = (outtakeTwoPower == 0.0) ? 1 : 0.0;
         }
 
         robot.setOuttakeVelocity(outtakeVel);
@@ -60,6 +60,11 @@ public class LancersTeleOpController {
             servoPos = (servoPos == 1.0) ? 0.4 : 1.0;
             robot.setServoPosition(servoPos);
         }
+
+        if (gamepad2.aWasPressed()) {robot.setOriginalTime();}
+
+        robot.aimReset();
+        robot.aimOuttakeToTx(0.5);
 
         // After the gamepad controls are in, update the robot and send telemetry
         robot.update();

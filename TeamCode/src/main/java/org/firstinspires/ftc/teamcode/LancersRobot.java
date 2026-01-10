@@ -133,16 +133,49 @@ public class LancersRobot {
         outtakeServo.setPosition(position);
     }
 
-    public void aimOuttakeToTx(double deadbandTx, double kP) {
+    public void aimOuttakeToTx(double deadbandTx) {
         if (result != null && result.isValid()) {
             double tx = result.getTx();
+            double multiplier;
+            multiplier = limelightWrapper.getDistanceToTag();
+            telemetry.addData("Distance to Tag:", multiplier);
             if (Math.abs(tx) > deadbandTx) {
-                outtakeRotationMotor.setPower(Math.signum(tx) * Math.abs(kP));
+                outtakeRotationMotor.setPower(Math.signum(tx) * (multiplier * 0.001));
             } else {
                 outtakeRotationMotor.setPower(0);
             }
         } else {
             outtakeRotationMotor.setPower(0);
+        }
+    }
+
+    private boolean setOriginalTime = false;
+    private double originalTime;
+
+    public void setOriginalTime() {
+        this.setOriginalTime = true;
+        this.originalTime = System.currentTimeMillis();
+
+    }
+
+    public void aimReset() {
+        if(setOriginalTime) {
+
+            if (result != null && result.isValid()) {
+                setOriginalTime = false;
+            }
+
+            double timeDiff = System.currentTimeMillis() - originalTime;
+            if(timeDiff >= 2000) {
+                outtakeRotationMotor.setPower(0);
+                setOriginalTime = false;
+            }
+            else if(timeDiff >= 1000) {
+                outtakeRotationMotor.setPower(-0.8);
+            }
+            else if(timeDiff >= 0) {
+                outtakeRotationMotor.setPower(0.8);
+            }
         }
     }
 
