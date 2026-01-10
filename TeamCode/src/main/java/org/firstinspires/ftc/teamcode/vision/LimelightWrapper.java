@@ -68,25 +68,28 @@ public class LimelightWrapper {
 
     public double getDistanceToTag() {
         Pose pose = this.getBotPose();
+
+        if (pose == null) {
+            return 0.0;
+        }
+
         double botX = pose.getX();
         double botY = pose.getY();
 
         //replace these values with the coordinates of the actual apriltags respectively
-        if (tagId == 20)
+        if (tagId == 20) // blue
         {
             //replace these numbers MAKE SURE TO USE INCHES
-            tagX = 0;
-            tagY = 0;
+            tagX = 13;
+            tagY = 133;
         }
-        else if (tagId == 24) {
+        else if (tagId == 24) { // reg
             //replace these numbers MAKE SURE TO USE INCHES
-            tagX = 1;
-            tagY = 1;
+            tagX = 131;
+            tagY = 133;
         }
 
-        if (pose == null) {
-            return -1.0;
-        }
+
 
         return Math.hypot(tagX - botX, tagY - botY);
     }

@@ -61,27 +61,27 @@ public class Red12 extends OpMode {
         // Collect 1
         collectFirstBalls = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, new Pose(96.000, 92.000)))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(90))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(0))
                 .addPath(new BezierCurve(
                         new Pose(96.000, 92.000),
                         new Pose(111.076, 73.552),
                         new Pose(130.000, 83.345),
                         shootPose
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(90), shootPose.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(0), shootPose.getHeading())
                 .build();
 
         // Collect 2
         collectSecondBalls = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, new Pose(96.000, 68.000)))
-                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(90))
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .addPath(new BezierCurve(
                         new Pose(96.000, 68.000),
                         new Pose(111.076, 49.552),
                         new Pose(130.000, 59.345),
                         new Pose(96.000, 68.000)
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(45))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .addPath(new BezierLine(new Pose(96.000, 68.000), shootPose))
                 .setConstantHeadingInterpolation(Math.toRadians(45))
                 .build();
@@ -89,14 +89,14 @@ public class Red12 extends OpMode {
         // Collect 3
         collectThirdBalls = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, new Pose(96.000, 44.000)))
-                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(90))
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .addPath(new BezierCurve(
                         new Pose(96.000, 44.000),
                         new Pose(111.076, 25.552),
                         new Pose(130.000, 35.345),
                         new Pose(96.000, 44.000)
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(45))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .addPath(new BezierLine(new Pose(96.000, 44.000), shootPose))
                 .setConstantHeadingInterpolation(Math.toRadians(45))
                 .build();

@@ -61,6 +61,11 @@ public class LancersTeleOpController {
             robot.setServoPosition(servoPos);
         }
 
+        if (gamepad2.aWasPressed()) {robot.setOriginalTime();}
+
+        robot.aimReset();
+        robot.aimOuttakeToTx(0.5);
+
         // After the gamepad controls are in, update the robot and send telemetry
         robot.update();
         robot.sendTelemetry(true);
