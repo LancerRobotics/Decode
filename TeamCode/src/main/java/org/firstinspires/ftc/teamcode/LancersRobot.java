@@ -54,7 +54,7 @@ public class LancersRobot {
         limelight = hardwareMap.get(Limelight3A.class, LancersBotConfig.LIMELIGHT);
         limelight.pipelineSwitch(8);
         /***
-        * LIMELIGHT PIPELINES:
+         * LIMELIGHT PIPELINES:
          * 0: Purple Balls
          * 1: Green Balls
          * 5: Testing LL tracking at Alan's house
@@ -91,6 +91,12 @@ public class LancersRobot {
 
         outtakeServo = hardwareMap.servo.get(LancersBotConfig.OUTTAKE_SERVO);
         outtakeServo.setPosition(servoPosition);
+    }
+    public void setOuttakeRotationMotor(double power) {
+        outtakeRotationMotor.setPower(power);
+    }
+    public DcMotorEx getOuttakeMotorTwo() {
+        return this.outtakeMotorTwo;
     }
 
     // ---- DRIVE ----

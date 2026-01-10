@@ -1,6 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import org.firstinspires.ftc.ftccommon.internal.manualcontrol.responses.ClosedLoopControlCoefficients;
+import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
 
 /**
  * Controls all controller logic and send it to LancersRobot
@@ -13,14 +18,39 @@ public class LancersTeleOpController {
     private double intakeOn = 0.0; // 0 or 1
 
     // Outtake state: velocity toggle + second motor power toggle
-    private double outtakeVel = 0.0;      // 0.0 or 1500.0 (ticks/sec, depending on your motor/SDK)
+    private double outtakeVel = 0.0; // 0.0 or 1500.0 (ticks/sec, depending on your motor/SDK)\
     private double outtakeTwoPower = 0.0; // 0.0 or 0.5
 
     // Servo state: 0.0 or 0.5 (your “open/closed” positions)
     private double servoPos = 1.0;
-
+    private LancersRobot robot;
+    private LimelightWrapper limelightWrapper;
 
     public void loop(LancersRobot robot, Gamepad gamepad1, Gamepad gamepad2) {
+        // if the april tag is out of sight
+        if(limelightWrapper.getLatestResult() != null) {
+            robot.getOuttakeMotorTwo().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
+
+        // alright countdown
+        /*
+        10 9 8 7 6 5 4 3 2 1
+        okay im stopping the code with me
+        oke bye bye
+
+        no plz king
+
+        buzzy pushed that comment
+        */
+
+        LLResult result = limelightWrapper.getLatestResult();
+
+        if(Math.abs(gamepad2.left_stick_x) > 0.1 && (result == null || !result.isValid())) {
+            robot.setOuttakeRotationMotor(gamepad2.left_stick_x);
+        }
+        else {
+            robot.setOuttakeRotationMotor(0);
+        }
 
         // DRIVETRAIN
 

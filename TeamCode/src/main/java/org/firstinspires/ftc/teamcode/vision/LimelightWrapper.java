@@ -20,6 +20,7 @@ public class LimelightWrapper {
     private static final double PEDRO_X_OFFSET_IN = 72.0;
     private static final double PEDRO_Y_OFFSET_IN = 72.0;
     private static double tagId;
+
     public LimelightWrapper(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, LancersBotConfig.LIMELIGHT);
         limelight.pipelineSwitch(8); // TODO: Change this pipeline to the correct pipeline later
@@ -29,6 +30,7 @@ public class LimelightWrapper {
     // returns a 2D pose with heading (in radians) if an april tag is found
     public Pose getBotPose() {
         LLResult result = limelight.getLatestResult();
+
         if (result == null || !result.isValid()) {
             return null;
         }
