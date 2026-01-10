@@ -41,8 +41,8 @@ public class LancersRobot {
     // ---- STATE ----
     private double servoPosition = 1.0;
     private double outtakeVelocity = 0.0;
-    private double outtakeTwoPower =
-    private double intakePower = 0. 0.0;0;
+    private double outtakeTwoPower = 0.0;
+    private double intakePower = 0.0;
     private double ticksPerSec;
 
     public LancersRobot(HardwareMap hardwareMap, Telemetry telem) {

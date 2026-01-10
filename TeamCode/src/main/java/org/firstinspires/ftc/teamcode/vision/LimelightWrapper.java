@@ -19,7 +19,7 @@ public class LimelightWrapper {
     // center of an FTC field (in inches) for pedro is (72, 72), for limelight its (0,0)
     private static final double PEDRO_X_OFFSET_IN = 72.0;
     private static final double PEDRO_Y_OFFSET_IN = 72.0;
-    private static double tagId;
+    private static int tagId;
 
     public LimelightWrapper(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, LancersBotConfig.LIMELIGHT);
@@ -95,7 +95,14 @@ public class LimelightWrapper {
 
         return Math.hypot(tagX - botX, tagY - botY);
     }
-
+    public boolean tagSeen() {
+        if(tagId == 20 || tagId == 24) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
     public void stop() {
         limelight.stop();
     }

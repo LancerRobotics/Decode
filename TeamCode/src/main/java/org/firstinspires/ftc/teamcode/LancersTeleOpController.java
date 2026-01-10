@@ -27,28 +27,17 @@ public class LancersTeleOpController {
     private LimelightWrapper limelightWrapper;
 
     public void loop(LancersRobot robot, Gamepad gamepad1, Gamepad gamepad2) {
-        // if the april tag is out of sight
-        if(limelightWrapper.getLatestResult() != null) {
-            robot.getOuttakeMotorTwo().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
 
-        // alright countdown
-        /*
-        10 9 8 7 6 5 4 3 2 1
-        okay im stopping the code with me
-        oke bye bye
+        // Turret "locking" mechanism
+        boolean tagVisible = limelightWrapper.tagSeen();
+        double turretJoystick = gamepad2.right_stick_x;
 
-        no plz king
-
-        buzzy pushed that comment
-        */
-
-        LLResult result = limelightWrapper.getLatestResult();
-
-        if(Math.abs(gamepad2.left_stick_x) > 0.1 && (result == null || !result.isValid())) {
-            robot.setOuttakeRotationMotor(gamepad2.left_stick_x);
-        }
-        else {
+        if (tagVisible) {
+            // This is the "aimbot" method where the limelight tracks the tag (ever so slightly off)
+            robot.aimOuttakeToTx(5);
+        } else if (Math.abs(turretJoystick) > 0.1) {
+            robot.setOuttakeRotationMotor(turretJoystick);
+        } else {
             robot.setOuttakeRotationMotor(0);
         }
 
