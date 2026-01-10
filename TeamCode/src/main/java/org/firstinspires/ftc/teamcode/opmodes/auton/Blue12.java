@@ -6,11 +6,15 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.LLThreading;
 import org.firstinspires.ftc.teamcode.LancersRobot;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
 
 @Autonomous(name = "Blue12")
 public class Blue12 extends OpMode {
@@ -35,9 +39,9 @@ public class Blue12 extends OpMode {
     private int cycleIndex = 0;
 
     // Relevant Poses
-    private final Pose startPose = new Pose(20, 122, Math.toRadians(135));
-    private final Pose shootPose = new Pose(48, 96, Math.toRadians(135));
-    private final Pose leavePose = new Pose(32, 80, Math.toRadians(135));
+    private final Pose startPose = new Pose(20, 122, Math.toRadians(136));
+    private final Pose shootPose = new Pose(48, 96, Math.toRadians(136));
+    private final Pose leavePose = new Pose(32, 80, Math.toRadians(136));
 
     // Paths
     private PathChain startPosToShootPos, shootPosToLeavePos;
@@ -47,6 +51,7 @@ public class Blue12 extends OpMode {
     private static final double SHOOT_SECONDS = 2.0; // TODO: tune later
 
     public void buildPaths() {
+
         startPosToShootPos = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, shootPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
@@ -74,31 +79,31 @@ public class Blue12 extends OpMode {
         // Collect 2
         collectSecondBalls = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, new Pose(48.000, 68.000)))
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(136), Math.toRadians(180))
                 .addPath(new BezierCurve(
                         new Pose(48.000, 68.000),
                         new Pose(32.924, 49.552),
                         new Pose(14.000, 59.345),
                         new Pose(48.000, 68.000)
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(136))
                 .addPath(new BezierLine(new Pose(48.000, 68.000), shootPose))
-                .setConstantHeadingInterpolation(Math.toRadians(135))
+                .setConstantHeadingInterpolation(Math.toRadians(136))
                 .build();
 
         // Collect 3
         collectThirdBalls = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, new Pose(48.000, 44.000)))
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(136), Math.toRadians(180))
                 .addPath(new BezierCurve(
                         new Pose(48.000, 44.000),
                         new Pose(32.924, 25.552),
                         new Pose(14.000, 35.345),
                         new Pose(48.000, 44.000)
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(136))
                 .addPath(new BezierLine(new Pose(48.000, 44.000), shootPose))
-                .setConstantHeadingInterpolation(Math.toRadians(135))
+                .setConstantHeadingInterpolation(Math.toRadians(136))
                 .build();
     }
 
@@ -118,10 +123,12 @@ public class Blue12 extends OpMode {
         }
     }
 
+
     private void statePathUpdate() {
         switch (pathState) {
 
             case STARTPOS_TO_SHOOTPOS: {
+
                 // start intake and outtake for the rest of the auton
                 robot.setOuttakeVelocity(1500);
                 robot.setIntake(1);
