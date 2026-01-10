@@ -6,15 +6,11 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.LLThreading;
 import org.firstinspires.ftc.teamcode.LancersRobot;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
 
 @Autonomous(name = "Blue12")
 public class Blue12 extends OpMode {
@@ -69,41 +65,58 @@ public class Blue12 extends OpMode {
                 .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(180))
                 .addPath(new BezierCurve(
                         new Pose(48.000, 92.000),
-                        new Pose(32.924, 73.552),
-                        new Pose(14.000, 83.345),
-                        shootPose
+                        new Pose(49.941, 82.414),
+                        new Pose(43.000, 84.000)
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .addPath(new BezierLine(
+                        new Pose(43.000, 84.000),
+                        new Pose(17.890, 84.000)
+                )).setConstantHeadingInterpolation(Math.toRadians(180))
+                .addPath(new BezierLine(
+                        new Pose(17.890, 84),
+                        shootPose
+                )).setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
                 .build();
 
         // Collect 2
         collectSecondBalls = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, new Pose(48.000, 68.000)))
-                .setLinearHeadingInterpolation(Math.toRadians(136), Math.toRadians(180))
+                .addPath(new BezierLine(shootPose, new Pose(48.000, 92.000)))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(180))
                 .addPath(new BezierCurve(
-                        new Pose(48.000, 68.000),
-                        new Pose(32.924, 49.552),
-                        new Pose(14.000, 59.345),
-                        new Pose(48.000, 68.000)
+                        new Pose(48.000, 92.000),
+                        new Pose(49.941, 58),
+                        new Pose(43.000, 60.000)
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(136))
-                .addPath(new BezierLine(new Pose(48.000, 68.000), shootPose))
-                .setConstantHeadingInterpolation(Math.toRadians(136))
+                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .addPath(new BezierLine(
+                        new Pose(43.000, 60.000),
+                        new Pose(17.890, 60.000)
+                )).setConstantHeadingInterpolation(Math.toRadians(180))
+                .addPath(new BezierLine(
+                        new Pose(17.890, 60),
+                        shootPose
+                )).setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
                 .build();
 
         // Collect 3
         collectThirdBalls = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, new Pose(48.000, 44.000)))
-                .setLinearHeadingInterpolation(Math.toRadians(136), Math.toRadians(180))
+                .addPath(new BezierLine(shootPose, new Pose(48.000, 20.000)))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(180))
                 .addPath(new BezierCurve(
-                        new Pose(48.000, 44.000),
-                        new Pose(32.924, 25.552),
-                        new Pose(14.000, 35.345),
-                        new Pose(48.000, 44.000)
+                        new Pose(48.000, 20.000),
+                        new Pose(49.941, 58.414),
+                        new Pose(43.000, 60.000)
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(136))
-                .addPath(new BezierLine(new Pose(48.000, 44.000), shootPose))
-                .setConstantHeadingInterpolation(Math.toRadians(136))
+                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .addPath(new BezierLine(
+                        new Pose(43.000, 60.000),
+                        new Pose(17.890, 60.000)
+                )).setConstantHeadingInterpolation(Math.toRadians(180))
+                .addPath(new BezierLine(
+                        new Pose(17.890, 60),
+                        shootPose
+                )).setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
                 .build();
     }
 
@@ -150,7 +163,7 @@ public class Blue12 extends OpMode {
                     justEntered = false;
                 }
 
-                robot.setOuttakeTwoPower(0.5);
+                robot.setOuttakeTwoPower(1);
                 if (pathTimer.getElapsedTimeSeconds() >= SHOOT_SECONDS) {
                     robot.setOuttakeTwoPower(0);
                     if (cycleIndex < 3) {
