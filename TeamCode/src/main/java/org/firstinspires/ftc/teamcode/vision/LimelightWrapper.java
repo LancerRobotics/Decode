@@ -88,7 +88,7 @@ public class LimelightWrapper {
             tagX = 13;
             tagY = 133;
         }
-        else if (tagId == 24) { // reg
+        else if (tagId == 24) { // red
             //replace these numbers MAKE SURE TO USE INCHES
             tagX = 131;
             tagY = 133;

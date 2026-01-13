@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.*;
@@ -10,6 +12,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
+
+import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.follower;
 
 public class LancersRobot {
 
@@ -28,6 +32,7 @@ public class LancersRobot {
     private final DcMotorEx outtakeMotor;
     private final DcMotorEx outtakeMotorTwo;
     private final DcMotorEx outtakeRotationMotor;
+    public double outtakeRotationMotorPosition;
     private final Servo outtakeServo;
 
     // ---- VISION ----
@@ -46,6 +51,8 @@ public class LancersRobot {
     private double ticksPerSec;
 
     private HardwareMap hardwareMap;
+
+    private Pose currentPosition;
 
     public LancersRobot(HardwareMap hardwareMap, Telemetry telem, boolean outtakeVelIsOn) {
 
@@ -97,12 +104,35 @@ public class LancersRobot {
 
         outtakeServo = hardwareMap.servo.get(LancersBotConfig.OUTTAKE_SERVO);
         outtakeServo.setPosition(servoPosition);
+
+        outtakeRotationMotorPosition = 0;
     }
     public void setOuttakeRotationMotor(double power) {
         outtakeRotationMotor.setPower(power);
     }
     public DcMotorEx getOuttakeMotorTwo() {
         return this.outtakeMotorTwo;
+    }
+
+    public double getXToRed() {
+        return 131 - currentPosition.getX();
+    }
+    public double getXToBlue() {
+        return  currentPosition.getX() - 13;
+    }
+    public double getY() {
+        return 133 - currentPosition.getY();
+    }
+
+    public double getAngleToRed() {
+        return Math.atan2(getXToRed(), getY());
+    }
+    public double getAngleToBlue() {
+        return Math.atan2(getXToBlue(), getY());
+    }
+
+    public void resetOuttakeRotationMotorPosition () {
+        outtakeRotationMotorPosition = rightRear.getCurrentPosition();
     }
 
     // ---- DRIVE ----
@@ -199,6 +229,10 @@ public class LancersRobot {
     public void update() {
         ticksPerSec = outtakeMotor.getVelocity(AngleUnit.DEGREES);
         result = limelight.getLatestResult();
+
+        currentPosition = follower.getPose();
+
+
     }
 
     public void sendTelemetry(boolean showVision) {
@@ -221,6 +255,7 @@ public class LancersRobot {
         telemetry.addData("Outtake 2 power", outtakeTwoPower);
         telemetry.addData("Intake power", intakePower);
         telemetry.addData("Servo position", servoPosition);
+        telemetry.addData("Outtake rotation motor ticks", rightRear.getCurrentPosition()-outtakeRotationMotorPosition);
 
         telemetry.update();
     }

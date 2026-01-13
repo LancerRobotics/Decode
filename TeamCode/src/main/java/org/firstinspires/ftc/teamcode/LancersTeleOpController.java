@@ -65,6 +65,10 @@ public class LancersTeleOpController {
             intakeDirection *= -1.0;
         }
 
+        if(gamepad2.bWasPressed()) {
+            robot.resetOuttakeRotationMotorPosition();
+        }
+
         robot.setIntake(intakeOn * intakeDirection);
 
         // OUTTAKE
