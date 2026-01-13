@@ -13,7 +13,8 @@ public class LancersTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         // Create robot once (hardwareMap + telemetry + gamepads)
-        LancersRobot robot = new LancersRobot(hardwareMap, telemetry);
+        LancersRobot robot = new LancersRobot(hardwareMap, telemetry, true);
+        // outtake speed is currently based off velocity PIDFs, not raw motor power
 
         LancersTeleOpController controller = new LancersTeleOpController();
 

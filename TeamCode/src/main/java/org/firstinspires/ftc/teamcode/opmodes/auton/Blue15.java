@@ -12,18 +12,18 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.LancersRobot;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Blue12")
-public class Blue12 extends OpMode {
+@Autonomous(name = "Blue15")
+public class Blue15 extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
     private LancersRobot robot;
 
-    // --- STATE MACHINE ---
     public enum PathState {
         STARTPOS_TO_SHOOTPOS,
         SHOOT,
         COLLECT,
+        WAIT_AFTER_GATE,
         SHOOTPOS_TO_LEAVEPOS,
         DONE
     }
@@ -31,20 +31,18 @@ public class Blue12 extends OpMode {
     private PathState pathState;
     private boolean justEntered = true;
 
-    // Cycle index for collecting and shooting
     private int cycleIndex = 0;
 
-    // Relevant Poses
     private final Pose startPose = new Pose(20, 122, Math.toRadians(136));
     private final Pose shootPose = new Pose(48, 96, Math.toRadians(136));
     private final Pose leavePose = new Pose(32, 80, Math.toRadians(136));
+    private final Pose gatePose = new Pose(11.5, 58.5, Math.toRadians(145));
 
-    // Paths
     private PathChain startPosToShootPos, shootPosToLeavePos;
     private PathChain collectFirstBalls, collectSecondBalls, collectThirdBalls;
+    private PathChain shootPosToGatePos, gatePosToShootPos;
 
-    // Timings
-    private static final double SHOOT_SECONDS = 1.5; // TODO: tune later
+    private static final double SHOOT_SECONDS = 1.5;
 
     public void buildPaths() {
 
@@ -58,8 +56,6 @@ public class Blue12 extends OpMode {
                 .setLinearHeadingInterpolation(shootPose.getHeading(), leavePose.getHeading())
                 .build();
 
-
-        // Collect 1
         collectFirstBalls = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, new Pose(48.000, 92.000)))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(180))
@@ -72,14 +68,15 @@ public class Blue12 extends OpMode {
                 .addPath(new BezierLine(
                         new Pose(43.000, 84.000),
                         new Pose(36.000, 84.000)
-                )).setConstantHeadingInterpolation(Math.toRadians(180))
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(new BezierLine(
                         new Pose(36, 84),
                         shootPose
-                )).setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
+                ))
+                .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
                 .build();
 
-        // Collect 2
         collectSecondBalls = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, new Pose(48.000, 92.000)))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(180))
@@ -88,61 +85,70 @@ public class Blue12 extends OpMode {
                         new Pose(49.941, 58),
                         new Pose(43.000, 60.000)
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(185))
+                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                 .addPath(new BezierLine(
                         new Pose(43.000, 60.000),
                         new Pose(30, 60.000)
-                )).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(new BezierLine(
                         new Pose(30, 60),
                         shootPose
-                )).setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
+                ))
+                .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
                 .build();
 
-        // Collect 3
         collectThirdBalls = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, new Pose(48.000, 48.000)))
+                .addPath(new BezierLine(shootPose, new Pose(48.000, 42.000)))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(180))
-                //.addPath(new BezierCurve(
-                //        new Pose(48.000, 20.000),
-                //        new Pose(49.941, 58.414),
-                //        new Pose(43.000, 60.000)
-                //))
-                //.setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                 .addPath(new BezierLine(
-                        new Pose(48, 48.000),
-                        new Pose(30, 48.000)
-                )).setConstantHeadingInterpolation(Math.toRadians(180))
+                        new Pose(48, 42.000),
+                        new Pose(30, 42.000)
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(new BezierLine(
-                        new Pose(30, 48),
+                        new Pose(30, 42),
                         shootPose
-                )).setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
+                ))
+                .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
+                .build();
+
+        shootPosToGatePos = follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, new Pose(44, 58.5)))
+                .setConstantHeadingInterpolation(Math.toRadians(136))
+                .addPath(new BezierLine(new Pose(44, 58.5), gatePose))
+                .setLinearHeadingInterpolation(Math.toRadians(136), gatePose.getHeading())
+                .build();
+
+        gatePosToShootPos = follower.pathBuilder()
+                .addPath(new BezierLine(gatePose, new Pose(44, 58.5)))
+                .setLinearHeadingInterpolation(gatePose.getHeading(), Math.toRadians(136))
+                .addPath(new BezierLine(new Pose(44, 58.5), shootPose))
+                .setConstantHeadingInterpolation(Math.toRadians(136))
                 .build();
     }
 
-    // Changes path state
     private void setPathState(PathState newState) {
         pathState = newState;
         pathTimer.resetTimer();
         justEntered = true;
     }
 
-    // Chooses the correct shooting and collecting path for the current cycle
     private PathChain getCollectPathForCycle(int cycleIndex) {
         switch (cycleIndex) {
-            case 0: return collectFirstBalls;
-            case 1: return collectSecondBalls;
+            case 0: return collectSecondBalls;
+            case 1: return shootPosToGatePos;
+            case 2: return gatePosToShootPos;
+            case 3: return collectFirstBalls;
             default: return collectThirdBalls;
         }
     }
-
 
     private void statePathUpdate() {
         switch (pathState) {
 
             case STARTPOS_TO_SHOOTPOS: {
 
-                // start intake and outtake for the rest of the auton
                 robot.setOuttakeVelocity(1500);
                 robot.setIntake(1);
 
@@ -151,7 +157,6 @@ public class Blue12 extends OpMode {
                     justEntered = false;
                 }
                 if (!follower.isBusy()) {
-                    // arrived at shoot pose for the first time
                     cycleIndex = 0;
                     setPathState(PathState.SHOOT);
                 }
@@ -166,10 +171,10 @@ public class Blue12 extends OpMode {
                 robot.setOuttakeTwoPower(1);
                 if (pathTimer.getElapsedTimeSeconds() >= SHOOT_SECONDS) {
                     robot.setOuttakeTwoPower(0);
-                    if (cycleIndex < 3) {
-                        setPathState(PathState.COLLECT); // Goes onto the next collect cycle
+                    if (cycleIndex < 5) {
+                        setPathState(PathState.COLLECT);
                     } else {
-                        setPathState(PathState.SHOOTPOS_TO_LEAVEPOS); // Leaves
+                        setPathState(PathState.SHOOTPOS_TO_LEAVEPOS);
                     }
                 }
                 break;
@@ -182,8 +187,26 @@ public class Blue12 extends OpMode {
                 }
 
                 if (!follower.isBusy()) {
-                    cycleIndex++; // Completed one cycle, going onto the next one
-                    setPathState(PathState.SHOOT);
+                    if (cycleIndex == 1) {
+                        cycleIndex++;
+                        setPathState(PathState.COLLECT);
+                    } else if (cycleIndex == 2) {
+                        cycleIndex++;
+                        setPathState(PathState.WAIT_AFTER_GATE);
+                    } else {
+                        cycleIndex++;
+                        setPathState(PathState.SHOOT);
+                    }
+                }
+                break;
+            }
+
+            case WAIT_AFTER_GATE: {
+                if (justEntered) {
+                    justEntered = false;
+                }
+                if (pathTimer.getElapsedTimeSeconds() >= 1.5) {
+                    setPathState(PathState.COLLECT);
                 }
                 break;
             }
@@ -222,7 +245,6 @@ public class Blue12 extends OpMode {
         follower.setPose(startPose);
 
         setPathState(PathState.STARTPOS_TO_SHOOTPOS);
-
     }
 
     @Override

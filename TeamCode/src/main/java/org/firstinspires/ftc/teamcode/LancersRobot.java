@@ -45,7 +45,11 @@ public class LancersRobot {
     private double intakePower = 0.0;
     private double ticksPerSec;
 
-    public LancersRobot(HardwareMap hardwareMap, Telemetry telem) {
+    private HardwareMap hardwareMap;
+
+    public LancersRobot(HardwareMap hardwareMap, Telemetry telem, boolean outtakeVelIsOn) {
+
+        this.hardwareMap = hardwareMap;
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telem, dashboard.getTelemetry());
@@ -85,9 +89,11 @@ public class LancersRobot {
         outtakeMotorTwo.setDirection(DcMotorSimple.Direction.FORWARD);
         outtakeRotationMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        PIDFCoefficients pidf = new PIDFCoefficients(100, 0, 0, 19.8);
-        outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        if (outtakeVelIsOn) {
+            outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            PIDFCoefficients pidf = new PIDFCoefficients(100, 0, 0, 19.8);
+            outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        }
 
         outtakeServo = hardwareMap.servo.get(LancersBotConfig.OUTTAKE_SERVO);
         outtakeServo.setPosition(servoPosition);
@@ -127,6 +133,10 @@ public class LancersRobot {
     public void setOuttakeVelocity(double velocity) {
         outtakeVelocity = velocity;
         outtakeMotor.setVelocity(velocity);
+    }
+
+    public void setOuttakePower(double power) {
+        outtakeMotor.setPower(power);
     }
 
     public void setOuttakeTwoPower(double power) {
@@ -219,4 +229,9 @@ public class LancersRobot {
     public static double respectDeadZones(double input) {
         return (Math.abs(input) < DEAD_ZONE_LIMIT) ? 0.0 : input;
     }
+
+    public HardwareMap getHardwareMap() {
+        return hardwareMap;
+    }
 }
+

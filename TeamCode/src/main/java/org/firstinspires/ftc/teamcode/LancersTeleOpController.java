@@ -4,6 +4,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.responses.ClosedLoopControlCoefficients;
 import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
 
@@ -19,6 +20,7 @@ public class LancersTeleOpController {
 
     // Outtake state: velocity toggle + second motor power toggle
     private double outtakeVel = 0.0; // 0.0 or 1500.0 (ticks/sec, depending on your motor/SDK)\
+    private double outtakePower = 0.0; // 0 or 1
     private double outtakeTwoPower = 0.0; // 0.0 or 0.5
 
     // Servo state: 0.0 or 0.5 (your “open/closed” positions)
@@ -27,6 +29,8 @@ public class LancersTeleOpController {
     private LimelightWrapper limelightWrapper;
 
     public void loop(LancersRobot robot, Gamepad gamepad1, Gamepad gamepad2) {
+
+        limelightWrapper = new LimelightWrapper(robot.getHardwareMap());
 
         // Turret "locking" mechanism
         boolean tagVisible = limelightWrapper.tagSeen();
@@ -66,6 +70,7 @@ public class LancersTeleOpController {
         // OUTTAKE
         if (gamepad2.rightBumperWasPressed()) {
             outtakeVel = (outtakeVel == 0.0) ? 1500.0 : 0.0;
+            //outtakePower = (outtakePower == 0.0) ? 1:0;
         }
 
         if (gamepad2.leftBumperWasPressed()) {
@@ -73,6 +78,8 @@ public class LancersTeleOpController {
         }
 
         robot.setOuttakeVelocity(outtakeVel);
+        //robot.setOuttakePower(outtakePower);
+
         robot.setOuttakeTwoPower(outtakeTwoPower);
 
         if (gamepad2.yWasPressed()) {

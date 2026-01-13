@@ -29,14 +29,17 @@ public class LimelightWrapper {
 
     // returns a 2D pose with heading (in radians) if an april tag is found
     public Pose getBotPose() {
-        LLResult result = limelight.getLatestResult();
 
-        if (result == null || !result.isValid()) {
+        if (limelight.getLatestResult() == null || !limelight.getLatestResult().isValid()) {
             return null;
         }
 
+        LLResult result = limelight.getLatestResult();
+
         List<LLResultTypes.FiducialResult> tags = result.getFiducialResults();
         boolean validTagSeen = false;
+
+        tagId = 0;
 
         for (LLResultTypes.FiducialResult fr : tags) {
             int id = fr.getFiducialId();
@@ -96,6 +99,27 @@ public class LimelightWrapper {
         return Math.hypot(tagX - botX, tagY - botY);
     }
     public boolean tagSeen() {
+        if (limelight.getLatestResult() == null || !limelight.getLatestResult().isValid()) {
+            return false;
+        }
+
+        LLResult result = limelight.getLatestResult();
+
+        List<LLResultTypes.FiducialResult> tags = result.getFiducialResults();
+        boolean validTagSeen = false;
+
+        tagId = 0;
+
+        for (LLResultTypes.FiducialResult fr : tags) {
+            int id = fr.getFiducialId();
+            if (id == 20 || id == 24) {
+                validTagSeen = true;
+                tagId = id;
+                break;
+            }
+        }
+
+
         if(tagId == 20 || tagId == 24) {
             return true;
         }
