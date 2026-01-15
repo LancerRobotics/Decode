@@ -10,16 +10,20 @@ import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
 
-import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.follower;
 
 public class LancersRobot {
 
     // ---- CONSTANTS ----
     private static final double TICKS_PER_REV = 1534.4;
     public static final double DEAD_ZONE_LIMIT = 0.15;
+
+    private double turretTicksPerDegree = -4.79556;
+    private double turretTicksIntercept = +14;
+    private double turretZeroOffset = 159; // 69 clockwise from 0 degree ( 90 degrees relative to field)
 
     // ---- DRIVETRAIN ----
     private final DcMotorEx leftFront;
@@ -51,8 +55,6 @@ public class LancersRobot {
     private double ticksPerSec;
 
     private HardwareMap hardwareMap;
-
-    private Pose currentPosition;
 
     public LancersRobot(HardwareMap hardwareMap, Telemetry telem, boolean outtakeVelIsOn) {
 
@@ -96,6 +98,11 @@ public class LancersRobot {
         outtakeMotorTwo.setDirection(DcMotorSimple.Direction.FORWARD);
         outtakeRotationMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
+         odo = hardwareMap.get(GoBildaPinpointDriver.class, LancersBotConfig.PINPOINT);
+         odo.setOffsets(-6.5625, 7.8125, DistanceUnit.INCH);
+         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+
         if (outtakeVelIsOn) {
             outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             PIDFCoefficients pidf = new PIDFCoefficients(100, 0, 0, 19.8);
@@ -114,8 +121,13 @@ public class LancersRobot {
         return this.outtakeMotorTwo;
     }
 
+    /***
+     * In ftc, x and y are switched, so the odo.getPosY()
+     * and odo.getPosX() functions are also switched.
+     ***/
+
     public double getXToRed() {
-        return 131 - currentPosition.getX();
+        return 131 - odo.getPosY(DistanceUnit.INCH);
     }
     public double getXToBlue() {
         return  currentPosition.getX() - 13;
@@ -124,12 +136,63 @@ public class LancersRobot {
         return 133 - currentPosition.getY();
     }
 
+    private static double wrapDegrees(double a) {
+        while (a >= 180.0) a -= 360.0;
+        while (a < -180.0) a += 360.0;
+        return a;
+    }
+
+
     public double getAngleToRed() {
-        return Math.atan2(getXToRed(), getY());
+        double targetAngle = Math.toDegrees(Math.atan2(getXToRed(), getY()));
+        double robotAngle = odo.getHeading(AngleUnit.DEGREES);
+
+        double turretAngle = wrapDegrees(targetAngle - robotAngle);
+        turretAngle = wrapDegrees(turretAngle - turretZeroOffset);
+        return turretAngle;
     }
     public double getAngleToBlue() {
-        return Math.atan2(getXToBlue(), getY());
+        double targetAngle = Math.toDegrees(Math.atan2(getXToBlue(), getY()));
+        double robotAngle = odo.getHeading(AngleUnit.DEGREES);
+
+        double turretAngle = wrapDegrees(targetAngle - robotAngle);
+        turretAngle = wrapDegrees(turretAngle - turretZeroOffset);
+        return turretAngle;
     }
+
+    private double turretDegToTicks(double deg) {
+        return (turretTicksPerDegree * deg) + turretTicksIntercept;
+    }
+
+    public void aimTurretToAngle(double desiredTurretDeg, double kP, double maxPower, double deadbandDeg) {
+        double targetTicks = turretDegToTicks(desiredTurretDeg);
+
+        double currentTicks = -rightRear.getCurrentPosition();
+
+        double errorTicks = targetTicks - currentTicks; // amount of ticks off
+        double errorDeg = errorTicks / -turretTicksPerDegree; // amount of degrees off
+
+        telemetry.addData("target ticks", targetTicks); // temp
+        telemetry.addData("desired turret angle", desiredTurretDeg);
+        telemetry.addData("error ticks", errorTicks);
+        telemetry.addData("error deg", errorDeg);
+
+        if (Math.abs(errorDeg) < deadbandDeg) {
+            outtakeRotationMotor.setPower(0);
+            return;
+        }
+
+        // changes power based on delta value of ticks
+        double power = kP * errorTicks;
+
+
+        if (power > maxPower) power = maxPower;
+        if (power < -maxPower) power = -maxPower;
+
+        outtakeRotationMotor.setPower(power);
+    }
+
+
 
     public void resetOuttakeRotationMotorPosition () {
         outtakeRotationMotorPosition = rightRear.getCurrentPosition();
@@ -230,7 +293,9 @@ public class LancersRobot {
         ticksPerSec = outtakeMotor.getVelocity(AngleUnit.DEGREES);
         result = limelight.getLatestResult();
 
-        currentPosition = follower.getPose();
+        odo.update();
+
+        aimTurretToAngle(getAngleToBlue(), 0.003, 0.5, 0.75);
 
 
     }
@@ -255,7 +320,7 @@ public class LancersRobot {
         telemetry.addData("Outtake 2 power", outtakeTwoPower);
         telemetry.addData("Intake power", intakePower);
         telemetry.addData("Servo position", servoPosition);
-        telemetry.addData("Outtake rotation motor ticks", rightRear.getCurrentPosition()-outtakeRotationMotorPosition);
+        telemetry.addData("Outtake rotation motor ticks", -rightRear.getCurrentPosition()-outtakeRotationMotorPosition);
 
         telemetry.update();
     }

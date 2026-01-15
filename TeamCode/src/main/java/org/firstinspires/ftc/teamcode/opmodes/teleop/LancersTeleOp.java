@@ -16,6 +16,8 @@ public class LancersTeleOp extends LinearOpMode {
         LancersRobot robot = new LancersRobot(hardwareMap, telemetry, true);
         // outtake speed is currently based off velocity PIDFs, not raw motor power
 
+        robot.odo.resetPosAndIMU();
+
         LancersTeleOpController controller = new LancersTeleOpController();
 
         waitForStart();
