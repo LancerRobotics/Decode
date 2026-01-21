@@ -237,7 +237,7 @@ public class Blue15 extends OpMode {
         opModeTimer = new Timer();
         opModeTimer.resetTimer();
 
-        robot = new LancersRobot(hardwareMap, telemetry, true);
+        robot = new LancersRobot(hardwareMap, telemetry, true, false);
 
         follower = Constants.createFollower(hardwareMap);
 

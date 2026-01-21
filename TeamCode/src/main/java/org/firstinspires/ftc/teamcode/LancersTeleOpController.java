@@ -25,7 +25,6 @@ public class LancersTeleOpController {
 
     // Servo state: 0.0 or 0.5 (your “open/closed” positions)
     private double servoPos = 1.0;
-    private LancersRobot robot;
     private LimelightWrapper limelightWrapper;
 
     public void loop(LancersRobot robot, Gamepad gamepad1, Gamepad gamepad2) {
@@ -43,6 +42,13 @@ public class LancersTeleOpController {
             robot.setOuttakeRotationMotor(turretJoystick);
         } else {
             robot.setOuttakeRotationMotor(0);
+        }
+
+        if (gamepad1.dpadLeftWasPressed()){
+            robot.changeTurretOffset(-10);
+        }
+        if (gamepad1.dpadRightWasPressed()){
+            robot.changeTurretOffset(10);
         }
 
         // DRIVETRAIN
@@ -72,12 +78,14 @@ public class LancersTeleOpController {
         robot.setIntake(intakeOn * intakeDirection);
 
         // OUTTAKE
-        if (gamepad2.rightBumperWasPressed()) {
-            outtakeVel = (outtakeVel == 0.0) ? 1500.0 : 0.0;
+        //if (gamepad2.rightBumperWasPressed()) {
+        if (gamepad1.dpadDownWasPressed()) {
+            outtakeVel = (outtakeVel == 0.0) ? 2200.0 : 0.0;
             //outtakePower = (outtakePower == 0.0) ? 1:0;
         }
 
-        if (gamepad2.leftBumperWasPressed()) {
+        //if (gamepad2.leftBumperWasPressed()) {
+        if (gamepad1.dpadUpWasPressed()) { // TODO: Change later
             outtakeTwoPower = (outtakeTwoPower == 0.0) ? 1 : 0.0;
         }
 

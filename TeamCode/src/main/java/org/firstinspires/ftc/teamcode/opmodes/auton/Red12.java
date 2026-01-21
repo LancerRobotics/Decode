@@ -218,7 +218,7 @@ public class Red12 extends OpMode {
         opModeTimer = new Timer();
         opModeTimer.resetTimer();
 
-        robot = new LancersRobot(hardwareMap, telemetry, true);
+        robot = new LancersRobot(hardwareMap, telemetry, true, true);
 
         follower = Constants.createFollower(hardwareMap);
 
