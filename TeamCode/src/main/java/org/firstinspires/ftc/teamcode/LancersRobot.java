@@ -39,6 +39,8 @@ public class LancersRobot {
     public double outtakeRotationMotorPosition;
     private final Servo outtakeServo;
 
+    public GoBildaPinpointDriver odo;
+
     // ---- VISION ----
     private final Limelight3A limelight;
     private final LimelightWrapper limelightWrapper;
@@ -98,13 +100,13 @@ public class LancersRobot {
         rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
 
         intakeMotor = hardwareMap.dcMotor.get(LancersBotConfig.INTAKE_MOTOR);
-        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         outtakeMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR);
         outtakeMotorTwo = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR_TWO);
         outtakeRotationMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_ROTATION_MOTOR);
 
-        outtakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        outtakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeMotorTwo.setDirection(DcMotorSimple.Direction.FORWARD);
         outtakeRotationMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         outtakeRotationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // resets stored encoder values and stops motor
@@ -149,10 +151,10 @@ public class LancersRobot {
         return 131 - odo.getPosY(DistanceUnit.INCH);
     }
     public double getXToBlue() {
-        return  currentPosition.getX() - 13;
+        return odo.getPosY(DistanceUnit.INCH) - 13;
     }
     public double getY() {
-        return 133 - currentPosition.getY();
+        return 133 - odo.getPosX(DistanceUnit.INCH);
     }
 
     private static double wrapDegrees(double a) {
@@ -385,15 +387,37 @@ public class LancersRobot {
          */
 
         // INTAKE/OUTTAKE POWER/VEL TESTING
-        /*
         telemetry.addData("Ticks per second", ticksPerSec);
         telemetry.addData("Target velocity", outtakeVelocity);
         telemetry.addData("Actual velocity", outtakeMotor.getVelocity());
         telemetry.addData("Outtake 2 power", outtakeTwoPower);
         telemetry.addData("Intake power", intakePower);
         telemetry.addData("Servo position", servoPosition);
-        telemetry.addData("Outtake rotation motor ticks", -rightRear.getCurrentPosition()-outtakeRotationMotorPosition);
+        telemetry.addData("Outtake rotation motor ticks", -outtakeRotationMotor.getCurrentPosition()-outtakeRotationMotorPosition);
 
+        // position/pinpoint testing
+        /*
+        telemetry.addData("X Coordinate : ", odo.getPosX(DistanceUnit.INCH));
+        telemetry.addData("Y Coordinate: ", odo.getPosY(DistanceUnit.INCH));
+        telemetry.addData("Heading: ", odo.getHeading(AngleUnit.DEGREES));
+
+        telemetry.addLine("----------------------------");
+        */
+
+        // turret testing
+        /*
+        telemetry.addData("target ticks", targetTicks);
+        telemetry.addData("error ticks", errorTicks);
+        telemetry.addData("target angle", targetAngle);
+        telemetry.addData("robot angle", robotAngle);
+        telemetry.addData("new turret angle", desiredTurretDeg);
+        telemetry.addData("error deg", errorDeg);
+        telemetry.addLine("rotation direction: "+((errorTicks<0) ? "clockwise":"counter-clockwise"));
+
+        telemetry.addLine("----------------------------");
+
+        telemetry.addData("Current Offset", turretZeroOffset);
+        */
         telemetry.update();
     }
 
