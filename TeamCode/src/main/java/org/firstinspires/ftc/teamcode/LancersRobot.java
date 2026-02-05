@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.arcrobotics.ftclib.util.InterpLUT;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
@@ -68,7 +69,10 @@ public class LancersRobot {
 
     private HardwareMap hardwareMap;
 
+    private InterpLUT lutRed, lutBlue;
+
     public LancersRobot(HardwareMap hardwareMap, Telemetry telem, boolean outtakeVelIsOn, boolean redMode) {
+        setupLut(); // add all the keys in THIS method!!!!!
 
         this.hardwareMap = hardwareMap;
 
@@ -133,6 +137,29 @@ public class LancersRobot {
 
         this.redMode = redMode;
     }
+
+    public void setupLut() {
+        lutRed = new InterpLUT();
+        // todo: add all the keys
+        lutBlue = new InterpLUT();
+        // todo: mirror the blue one from the red one
+
+        // all key-value pair changes under the following two lines does not get processed
+        lutRed.createLUT();
+        lutBlue.createLUT();
+    }
+
+    public double getRedAngle() {
+        double distance =- 1; // todo: get the distnace in some way i think theres already a method that do
+        return lutRed.get(distance);
+    }
+
+    public double getBlueAngle() {
+//        todo: lowk do the same thing for this as the red one im not rewriting the todos
+        double distance = -1;
+        return lutBlue.get(distance);
+    }
+
     public void setOuttakeRotationMotor(double power) {
         outtakeRotationMotor.setPower(power); //temp
     }
