@@ -100,13 +100,13 @@ public class LancersRobot {
         rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
 
         intakeMotor = hardwareMap.dcMotor.get(LancersBotConfig.INTAKE_MOTOR);
-        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         outtakeMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR);
         outtakeMotorTwo = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR_TWO);
         outtakeRotationMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_ROTATION_MOTOR);
 
-        outtakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        outtakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeMotorTwo.setDirection(DcMotorSimple.Direction.FORWARD);
         outtakeRotationMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         outtakeRotationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // resets stored encoder values and stops motor
@@ -387,7 +387,6 @@ public class LancersRobot {
          */
 
         // INTAKE/OUTTAKE POWER/VEL TESTING
-        /*
         telemetry.addData("Ticks per second", ticksPerSec);
         telemetry.addData("Target velocity", outtakeVelocity);
         telemetry.addData("Actual velocity", outtakeMotor.getVelocity());
@@ -395,16 +394,18 @@ public class LancersRobot {
         telemetry.addData("Intake power", intakePower);
         telemetry.addData("Servo position", servoPosition);
         telemetry.addData("Outtake rotation motor ticks", -outtakeRotationMotor.getCurrentPosition()-outtakeRotationMotorPosition);
-         */
 
         // position/pinpoint testing
+        /*
         telemetry.addData("X Coordinate : ", odo.getPosX(DistanceUnit.INCH));
         telemetry.addData("Y Coordinate: ", odo.getPosY(DistanceUnit.INCH));
         telemetry.addData("Heading: ", odo.getHeading(AngleUnit.DEGREES));
 
         telemetry.addLine("----------------------------");
+        */
 
         // turret testing
+        /*
         telemetry.addData("target ticks", targetTicks);
         telemetry.addData("error ticks", errorTicks);
         telemetry.addData("target angle", targetAngle);
@@ -416,7 +417,7 @@ public class LancersRobot {
         telemetry.addLine("----------------------------");
 
         telemetry.addData("Current Offset", turretZeroOffset);
-
+        */
         telemetry.update();
     }
 
