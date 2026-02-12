@@ -22,8 +22,8 @@ public class LancersRobot {
     private static final double TICKS_PER_REV = 1534.4;
     public static final double DEAD_ZONE_LIMIT = 0.15;
 
-    private double turretTicksPerDegree = -4.79556;
-    private double turretTicksIntercept = +14;
+    private double turretTicksPerDegree = -3.0052;
+    private double turretTicksIntercept = -6.90114;
     private double turretZeroOffset = 0; // 79 with old turret, will be 0 with new turret
 
     // ---- DRIVETRAIN ----
@@ -61,7 +61,7 @@ public class LancersRobot {
     private boolean redMode; // true for red, false for blue
 
     // ---- STATE ----
-    private double servoPosition = 1.0;
+    private double servoPosition = 0.0;
     private double outtakeVelocity = 0.0;
     private double outtakeTwoPower = 0.0;
     private double intakePower = 0.0;
@@ -72,7 +72,7 @@ public class LancersRobot {
     private InterpLUT lutRed, lutBlue;
 
     public LancersRobot(HardwareMap hardwareMap, Telemetry telem, boolean outtakeVelIsOn, boolean redMode) {
-        setupLut(); // add all the keys in THIS method!!!!!
+        //setupLut(); // add all the keys in THIS method!!!!!
 
         this.hardwareMap = hardwareMap;
 
@@ -414,25 +414,25 @@ public class LancersRobot {
          */
 
         // INTAKE/OUTTAKE POWER/VEL TESTING
+        /*
         telemetry.addData("Ticks per second", ticksPerSec);
         telemetry.addData("Target velocity", outtakeVelocity);
         telemetry.addData("Actual velocity", outtakeMotor.getVelocity());
         telemetry.addData("Outtake 2 power", outtakeTwoPower);
         telemetry.addData("Intake power", intakePower);
         telemetry.addData("Servo position", servoPosition);
+        */
         telemetry.addData("Outtake rotation motor ticks", -outtakeRotationMotor.getCurrentPosition()-outtakeRotationMotorPosition);
 
         // position/pinpoint testing
-        /*
         telemetry.addData("X Coordinate : ", odo.getPosX(DistanceUnit.INCH));
         telemetry.addData("Y Coordinate: ", odo.getPosY(DistanceUnit.INCH));
         telemetry.addData("Heading: ", odo.getHeading(AngleUnit.DEGREES));
 
         telemetry.addLine("----------------------------");
-        */
 
         // turret testing
-        /*
+
         telemetry.addData("target ticks", targetTicks);
         telemetry.addData("error ticks", errorTicks);
         telemetry.addData("target angle", targetAngle);
@@ -444,7 +444,7 @@ public class LancersRobot {
         telemetry.addLine("----------------------------");
 
         telemetry.addData("Current Offset", turretZeroOffset);
-        */
+
         telemetry.update();
     }
 
