@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import org.firstinspires.ftc.teamcode.LancersBotConfig;
 
@@ -14,16 +15,16 @@ public class flywheelPIDFTuner extends OpMode {
 
     public DcMotorEx flywheelMotor;
 
-    public double highVelocity = 1500;
-    public double lowVelocity = 900;
+    public double highVelocity = 2500;
+    public double lowVelocity = 1500;
 
     double curTargetVelocity = highVelocity;
 
     // This Opmode is only tuning P and F
-    double P = 0; // 59.6
+    double P = 0; // 59.6, 50.04
     final double I = 0;
     final double D = 0;
-    double F = 0; // 19.8
+    double F = 0; // 19.8, 20.84
 
     double[] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001, 0.0001};
 
@@ -32,6 +33,7 @@ public class flywheelPIDFTuner extends OpMode {
     @Override
     public void init() {
         flywheelMotor = hardwareMap.get(DcMotorEx.class, LancersBotConfig.OUTTAKE_MOTOR);
+        flywheelMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheelMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, I, D, F);
         flywheelMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);

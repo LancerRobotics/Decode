@@ -83,14 +83,14 @@ public class LancersTeleOpController {
 
         // OUTTAKE
         //if (gamepad2.rightBumperWasPressed()) {
-        if (gamepad1.dpadDownWasPressed()) {
-            outtakeVel = (outtakeVel == 0.0) ? 2200.0 : 0.0;
+        if (gamepad2.rightBumperWasPressed()) {
+            outtakeVel = (outtakeVel == 0.0) ? 2400 : 0.0;
             //outtakePower = (outtakePower == 0.0) ? 1:0;
         }
 
         //if (gamepad2.leftBumperWasPressed()) {
-        if (gamepad1.dpadUpWasPressed()) { // TODO: Change later
-            outtakeTwoPower = (outtakeTwoPower == 0.0) ? 1 : 0.0;
+        if (gamepad2.leftBumperWasPressed()) { // TODO: Change later
+            outtakeTwoPower = (outtakeTwoPower == 0) ? 0.45 : 0;
         }
 
         robot.setOuttakeVelocity(outtakeVel);
