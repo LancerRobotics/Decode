@@ -63,7 +63,7 @@ public class LancersRobot {
     // ---- STATE ----
     private double servoPosition = 0.0;
     private double outtakeVelocity = 0.0;
-    private double outtakeTwoPower = 0.0;
+    private double outtakeTwoPower = -1.0;
     private double intakePower = 0.0;
     private double ticksPerSec;
 
@@ -126,7 +126,7 @@ public class LancersRobot {
 
         if (outtakeVelIsOn) {
             outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            PIDFCoefficients pidf = new PIDFCoefficients(100, 0, 0, 19.8);
+            PIDFCoefficients pidf = new PIDFCoefficients(50.04, 0, 0, 20.84);
             outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         }
 

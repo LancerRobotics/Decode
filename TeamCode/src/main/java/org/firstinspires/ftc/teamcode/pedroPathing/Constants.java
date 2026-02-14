@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
@@ -17,14 +18,19 @@ import org.firstinspires.ftc.teamcode.LancersBotConfig;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(10.12)
-            .forwardZeroPowerAcceleration(-30.46840712724944)
-            .lateralZeroPowerAcceleration(-61.84430269534938)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.045, 0, 0.01, 0.0512))
-            .headingPIDFCoefficients(new PIDFCoefficients(0.5,0.01,0,1.1));
+            .mass(10.52)
+            .forwardZeroPowerAcceleration(-38.092965) //-36.228636, -37.375510
+            .lateralZeroPowerAcceleration(-72.130466) //-63.620337, -76.621186
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.05, 0, 0.01, 0.072))
+            .headingPIDFCoefficients(new PIDFCoefficients(0.37,0,0.015,0.05))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.015,0,0.0007,0.6,0.046))
+            .centripetalScaling(0.0008);
 
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
+    public static PathConstraints pathConstraints = new PathConstraints(0.99,
+            100,
+            1.1,
+            1);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
@@ -45,11 +51,12 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .xVelocity(57.006134273499015)
-            .yVelocity(37.40623438076);
+            .xVelocity(77.485806)
+            .yVelocity(61.586316);
+
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(-6.5625)
-            .strafePodX(7.8125)
+            .forwardPodY(6.5625)
+            .strafePodX(-5.75)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName(LancersBotConfig.PINPOINT)
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
