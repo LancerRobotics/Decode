@@ -252,6 +252,25 @@ public class LancersRobot {
         return (turretTicksPerDegree * deg) + turretTicksIntercept;
     }
 
+    //Adds Limelight tracking to the existing odo logic for turret targeting
+    public double getIntegratedAngle(boolean isRed) {
+        double finalTargetAngle = isRed ? getAngleToRed() : getAngleToBlue();
+
+        if(limelightWrapper.tagSeen()) {
+            double currentTicks = -outtakeRotationMotor.getCurrentPosition();
+            double currentAngle = (currentTicks - turretTicksIntercept) / turretTicksPerDegree;
+            robotAngle = odo.getHeading(AngleUnit.DEGREES);
+            double fieldAngle = robotAngle + currentAngle + limelightWrapper.getBotPose().getX();
+            finalTargetAngle = wrapDegrees(fieldAngle - robotAngle - turretZeroOffset);
+        }
+
+        //uncomment this if we get 360 degree movement
+        //if (finalTargetAngle > 175) finalTargetAngle = 175;
+        //if (finalTargetAngle < -175) finalTargetAngle = -175;
+
+        return finalTargetAngle;
+    }
+
     public void aimTurretToAngle(double desiredTurretDeg, double kP, double maxPower, double deadbandDeg) {
 
         targetTicks = turretDegToTicks(desiredTurretDeg);

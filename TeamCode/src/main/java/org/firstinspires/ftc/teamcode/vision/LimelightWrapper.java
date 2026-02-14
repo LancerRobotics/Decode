@@ -21,6 +21,10 @@ public class LimelightWrapper {
     private static final double PEDRO_Y_OFFSET_IN = 72.0;
     private static int tagId;
 
+    public int getTagId() {
+        return tagId;
+    }
+
     public LimelightWrapper(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, LancersBotConfig.LIMELIGHT);
         limelight.pipelineSwitch(8); // TODO: Change this pipeline to the correct pipeline later

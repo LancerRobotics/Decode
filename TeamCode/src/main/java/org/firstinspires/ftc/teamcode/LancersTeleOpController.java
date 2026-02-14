@@ -35,10 +35,14 @@ public class LancersTeleOpController {
         boolean tagVisible = limelightWrapper.tagSeen();
         double turretJoystick = gamepad2.right_stick_x;
 
-        if (tagVisible) {
+        if (tagVisible && limelightWrapper.getTagId() == 20) {
             // This is the "aimbot" method where the limelight tracks the tag (ever so slightly off)
-            robot.aimOuttakeToTx(5);
-        } else if (Math.abs(turretJoystick) > 0.1) {
+            robot.aimTurretToAngle(robot.getIntegratedAngle(false), 0.1,0.8,1);
+        }
+        else if (tagVisible && limelightWrapper.getTagId() == 24) {
+            robot.aimTurretToAngle(robot.getIntegratedAngle(false),0.1,0.8,1);
+        }
+        else if (Math.abs(turretJoystick) > 0.1) {
             robot.setOuttakeRotationMotor(turretJoystick);
         } else {
             robot.setOuttakeRotationMotor(0);
