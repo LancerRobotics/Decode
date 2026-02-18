@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.LancersRobot;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
 
 @Autonomous(name = "Blue12")
 public class Blue12 extends OpMode {
@@ -19,12 +20,16 @@ public class Blue12 extends OpMode {
     private Timer pathTimer, opModeTimer;
     private LancersRobot robot;
 
+    private final LimelightWrapper limelightWrapper = new LimelightWrapper(hardwareMap);
+
     // --- STATE MACHINE ---
     public enum PathState {
         STARTPOS_TO_SHOOTPOS,
         SHOOT,
         COLLECT,
         SHOOTPOS_TO_LEAVEPOS,
+
+        ALIGN_TO_BALL,
         DONE
     }
 
@@ -198,6 +203,11 @@ public class Blue12 extends OpMode {
                     setPathState(PathState.DONE);
                 }
                 break;
+            }
+
+            case ALIGN_TO_BALL: {
+
+                double tx = limelightWrapper.getBallTy();
             }
 
             case DONE:

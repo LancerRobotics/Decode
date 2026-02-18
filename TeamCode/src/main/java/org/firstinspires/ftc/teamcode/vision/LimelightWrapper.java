@@ -11,8 +11,10 @@ import org.firstinspires.ftc.teamcode.LancersBotConfig;
 import com.pedropathing.geometry.Pose;
 
 import java.util.List;
+import java.util.Arrays;
 
 public class LimelightWrapper {
+    public List<String> acceptedBallLabels = Arrays.asList(new String[] {"blue", "red", "yellow"});
 
     private final Limelight3A limelight;
 
@@ -101,6 +103,22 @@ public class LimelightWrapper {
 
 
         return Math.hypot(tagX - botX, tagY - botY);
+    }
+
+    public double getBallTy() {
+        LLResult result = limelight.getLatestResult();
+        if (result==null || !result.isValid()) return 0;
+
+        List<LLResultTypes.DetectorResult> detections = result.getDetectorResults();
+        double minTy = 1e9;
+        for(LLResultTypes.DetectorResult det : detections) {
+            if(acceptedBallLabels.contains(det.getClassName())) {
+                if(Math.abs(det.getTargetXDegrees()) < Math.abs(minTy)) {
+                    minTy = det.getTargetXDegrees();
+                }
+            }
+        }
+        return minTy == 1e9 ? 0 : minTy;
     }
     public boolean tagSeen() {
         if (limelight.getLatestResult() == null || !limelight.getLatestResult().isValid()) {
