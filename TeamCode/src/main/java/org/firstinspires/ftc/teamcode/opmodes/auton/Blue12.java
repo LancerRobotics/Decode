@@ -9,18 +9,25 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import org.firstinspires.ftc.teamcode.LancersBotConfig;
 import org.firstinspires.ftc.teamcode.LancersRobot;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
 
 @Autonomous(name = "Blue12")
 public class Blue12 extends OpMode {
-
     private Follower follower;
     private Timer pathTimer, opModeTimer;
     private LancersRobot robot;
 
     private final LimelightWrapper limelightWrapper = new LimelightWrapper(hardwareMap);
+
+    // Drivetrain motors
+    private DcMotorEx leftFront;
+    private DcMotorEx leftRear;
+    private DcMotorEx rightFront;
+    private DcMotorEx rightRear;
 
     // --- STATE MACHINE ---
     public enum PathState {
@@ -206,8 +213,30 @@ public class Blue12 extends OpMode {
             }
 
             case ALIGN_TO_BALL: {
+                double ty = limelightWrapper.getBallTy();
 
-                double tx = limelightWrapper.getBallTy();
+                // CONSTANTS
+                double kp = 0.03; // AKA speed of turn
+                double tolerance = 1; // the smaller this value is, the more strict we want our accuracy
+                double maxAdjustTime = 2.5; // how long do we want the bot to adjust for at most
+
+                if(Math.abs(ty) > tolerance && pathTimer.getElapsedTimeSeconds() < maxAdjustTime) {
+                    follower.breakFollowing();
+
+                    double turnPower = kp * ty;
+                    turnPower = Math.max(-0.4, Math.min(0.4, turnPower));
+                    leftFront.setPower(turnPower);
+                    leftRear.setPower(turnPower);
+                    rightFront.setPower(-turnPower);
+                    rightRear.setPower(-turnPower);
+                }
+                else {
+                    leftFront.setPower(0);
+                    leftRear.setPower(0);
+                    rightFront.setPower(0);
+                    rightRear.setPower(0);
+                    setPathState(PathState.COLLECT);
+                }
             }
 
             case DONE:
@@ -220,6 +249,11 @@ public class Blue12 extends OpMode {
 
     @Override
     public void init() {
+        leftFront = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
+        leftRear  = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.REAR_LEFT_MOTOR);
+        rightFront = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.FRONT_RIGHT_MOTOR);
+        rightRear  = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.REAR_RIGHT_MOTOR);
+
         pathTimer = new Timer();
         opModeTimer = new Timer();
         opModeTimer.resetTimer();

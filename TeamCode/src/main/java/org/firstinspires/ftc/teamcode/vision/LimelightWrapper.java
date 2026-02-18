@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Arrays;
 
 public class LimelightWrapper {
-    public List<String> acceptedBallLabels = Arrays.asList(new String[] {"blue", "red", "yellow"});
-
     private final Limelight3A limelight;
 
     // center of an FTC field (in inches) for pedro is (72, 72), for limelight its (0,0)
@@ -126,19 +124,26 @@ public class LimelightWrapper {
     }
 
     public double getBallTy() {
+        limelight.pipelineSwitch(0); // check for purple balls first
         LLResult result = limelight.getLatestResult();
         if (result==null || !result.isValid()) return 0;
 
         List<LLResultTypes.DetectorResult> detections = result.getDetectorResults();
         double minTy = 1e9;
         for(LLResultTypes.DetectorResult det : detections) {
-            if(acceptedBallLabels.contains(det.getClassName())) {
-                if(Math.abs(det.getTargetXDegrees()) < Math.abs(minTy)) {
-                    minTy = det.getTargetXDegrees();
-                }
+            if(Math.abs(det.getTargetYDegrees()) < Math.abs(minTy)) {
+                minTy = det.getTargetYDegrees();
             }
         }
-        return minTy == 1e9 ? 0 : minTy;
+
+        limelight.pipelineSwitch(1); // now we are checking for greens
+        for(LLResultTypes.DetectorResult det : detections) {
+            if(Math.abs(det.getTargetYDegrees()) < Math.abs(minTy)) {
+                minTy = det.getTargetYDegrees();
+            }
+        }
+
+        return minTy == 1e9?0:minTy;
     }
     public boolean tagSeen() {
         if (limelight.getLatestResult() == null || !limelight.getLatestResult().isValid()) {
