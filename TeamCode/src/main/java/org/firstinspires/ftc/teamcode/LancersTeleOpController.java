@@ -24,13 +24,19 @@ public class LancersTeleOpController {
     private double outtakeTwoPower = 0.0; // 0.0 or 0.5
 
     // Servo state: 0.0 or 0.5 (your “open/closed” positions)
-    private double servoPos = 1.0;
+    private double servoPos = 0;
     private LimelightWrapper limelightWrapper;
 
-    public void loop(LancersRobot robot, Gamepad gamepad1, Gamepad gamepad2) {
+    private LancersRobot robot;
 
+    public LancersTeleOpController(HardwareMap hardwareMap, LancersRobot robot) {
         limelightWrapper = new LimelightWrapper(robot.getHardwareMap());
+        this.robot = robot;
+    }
 
+    public void loop(Gamepad gamepad1, Gamepad gamepad2) {
+
+        /*
         // Turret "locking" mechanism
         boolean tagVisible = limelightWrapper.tagSeen();
         double turretJoystick = gamepad2.right_stick_x;
@@ -40,13 +46,14 @@ public class LancersTeleOpController {
             robot.aimTurretToAngle(robot.getIntegratedAngle(false), 0.1,0.8,1);
         }
         else if (tagVisible && limelightWrapper.getTagId() == 24) {
-            robot.aimTurretToAngle(robot.getIntegratedAngle(false),0.1,0.8,1);
+            robot.aimTurretToAngle(robot.getIntegratedAngle(true),0.1,0.8,1);
         }
         else if (Math.abs(turretJoystick) > 0.1) {
             robot.setOuttakeRotationMotor(turretJoystick);
         } else {
             robot.setOuttakeRotationMotor(0);
         }
+        */
 
         if (gamepad1.dpadLeftWasPressed()){
             robot.changeTurretOffset(-10);
@@ -82,31 +89,31 @@ public class LancersTeleOpController {
         robot.setIntake(intakeOn * intakeDirection);
 
         // OUTTAKE
+        if (gamepad1.dpadDownWasPressed()) {
         //if (gamepad2.rightBumperWasPressed()) {
-        if (gamepad2.rightBumperWasPressed()) {
-            outtakeVel = (outtakeVel == 0.0) ? 2400 : 0.0;
-            //outtakePower = (outtakePower == 0.0) ? 1:0;
+            //outtakeVel = (outtakeVel == 0.0) ? 2400 : 0.0;
+            outtakePower = (outtakePower == 0.0) ? 1:0;
         }
 
+        if (gamepad1.dpadUpWasPressed()) {
         //if (gamepad2.leftBumperWasPressed()) {
-        if (gamepad2.leftBumperWasPressed()) { // TODO: Change later
             outtakeTwoPower = (outtakeTwoPower == 0) ? 0.45 : 0;
         }
 
-        robot.setOuttakeVelocity(outtakeVel);
-        //robot.setOuttakePower(outtakePower);
+        //robot.setOuttakeVelocity(outtakeVel);
+        robot.setOuttakePower(outtakePower);
 
         robot.setOuttakeTwoPower(outtakeTwoPower);
 
         if (gamepad2.yWasPressed()) {
-            servoPos = (servoPos == 1.0) ? 0.4 : 1.0;
+            servoPos = (servoPos == 0) ? 1 : 0;
             robot.setServoPosition(servoPos);
         }
 
         if (gamepad2.aWasPressed()) {robot.setOriginalTime();}
 
-        robot.aimReset();
-        robot.aimOuttakeToTx(0.5);
+        //robot.aimReset();
+        //robot.aimOuttakeToTx(0.5);
 
         // After the gamepad controls are in, update the robot and send telemetry
         robot.update();
