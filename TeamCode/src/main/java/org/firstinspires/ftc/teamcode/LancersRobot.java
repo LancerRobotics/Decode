@@ -59,9 +59,10 @@ public class LancersRobot {
     private double targetAngle;
     private double robotAngle;
     private boolean redMode; // true for red, false for blue
+    private boolean autonMode;
 
     // ---- STATE ----
-    private double servoPosition = 0.0;
+    private double servoPosition = 0;
     private double outtakeVelocity = 0.0;
     private double outtakeTwoPower = -1.0;
     private double intakePower = 0.0;
@@ -69,10 +70,12 @@ public class LancersRobot {
 
     private HardwareMap hardwareMap;
 
-    private InterpLUT lutRed, lutBlue;
+    private InterpLUT servoLUT;
 
-    public LancersRobot(HardwareMap hardwareMap, Telemetry telem, boolean outtakeVelIsOn, boolean redMode) {
-        //setupLut(); // add all the keys in THIS method!!!!!
+    public LancersRobot(HardwareMap hardwareMap, Telemetry telem, boolean outtakeVelIsOn, boolean redMode, boolean autonMode) {
+        servoLUT = new InterpLUT();
+        //servoLUT.add(distance (inches), servo position);
+        //servoLUT.createLUT();
 
         this.hardwareMap = hardwareMap;
 
@@ -81,7 +84,7 @@ public class LancersRobot {
         telemetry.setMsTransmissionInterval(50);
 
         limelight = hardwareMap.get(Limelight3A.class, LancersBotConfig.LIMELIGHT);
-        limelight.pipelineSwitch(8);
+        limelight.pipelineSwitch(9);
         /***
          * LIMELIGHT PIPELINES:
          * 0: Purple Balls
@@ -114,7 +117,10 @@ public class LancersRobot {
         outtakeMotorTwo.setDirection(DcMotorSimple.Direction.FORWARD);
         outtakeRotationMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         outtakeRotationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // resets stored encoder values and stops motor
-        outtakeRotationMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // starts motor
+        if (autonMode) {
+            outtakeRotationMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
+        else {outtakeRotationMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);}
 
          odo = hardwareMap.get(GoBildaPinpointDriver.class, LancersBotConfig.PINPOINT);
 
@@ -127,37 +133,21 @@ public class LancersRobot {
         if (outtakeVelIsOn) {
             outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             PIDFCoefficients pidf = new PIDFCoefficients(50.04, 0, 0, 20.84);
+            //PIDFCoefficients pidf = new PIDFCoefficients(70, 0, 0, 30);
             outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        }
+        else {
+            outtakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
         outtakeServo = hardwareMap.servo.get(LancersBotConfig.OUTTAKE_SERVO);
+        outtakeServo.resetDeviceConfigurationForOpMode();
         outtakeServo.setPosition(servoPosition);
 
         outtakeRotationMotorPosition = 0;
 
         this.redMode = redMode;
-    }
-
-    public void setupLut() {
-        lutRed = new InterpLUT();
-        // todo: add all the keys
-        lutBlue = new InterpLUT();
-        // todo: mirror the blue one from the red one
-
-        // all key-value pair changes under the following two lines does not get processed
-        lutRed.createLUT();
-        lutBlue.createLUT();
-    }
-
-    public double getRedAngle() {
-        double distance =- 1; // todo: get the distnace in some way i think theres already a method that do
-        return lutRed.get(distance);
-    }
-
-    public double getBlueAngle() {
-//        todo: lowk do the same thing for this as the red one im not rewriting the todos
-        double distance = -1;
-        return lutBlue.get(distance);
+        this.autonMode = autonMode;
     }
 
     public void setOuttakeRotationMotor(double power) {
@@ -184,10 +174,10 @@ public class LancersRobot {
         return 133 - odo.getPosX(DistanceUnit.INCH);
     }
 
-    private static double wrapDegrees(double a) {
-        while (a >= 180.0) a -= 360.0;
-        while (a < -180.0) a += 360.0;
-        return a;
+    private double wrapRelativeTo(double angle, double center) {
+        while (angle - center >= 180.0) angle -= 360.0;
+        while (angle - center < -180.0) angle += 360.0;
+        return angle;
     }
 
 
@@ -209,14 +199,11 @@ public class LancersRobot {
         targetAngle = Math.toDegrees(Math.atan2(dy, dx));
         robotAngle = odo.getHeading(AngleUnit.DEGREES);
 
-        double desired = wrapDegrees(targetAngle - robotAngle - turretZeroOffset);
+        double desired = targetAngle - robotAngle - turretZeroOffset;
+        desired = wrapRelativeTo(desired, 0);
 
         double currentTicks = -outtakeRotationMotor.getCurrentPosition();
         double currentDegLocal = (currentTicks - turretTicksIntercept) / turretTicksPerDegree;
-
-        // decides if bot should stay in (-180, 180) degree range
-        double error = wrapDegrees(desired - currentDegLocal);
-        error += currentDegLocal;
 
         desiredTurretDeg = desired;
         return desiredTurretDeg;
@@ -235,14 +222,12 @@ public class LancersRobot {
         targetAngle = Math.toDegrees(Math.atan2(dy, dx));
         robotAngle = odo.getHeading(AngleUnit.DEGREES);
 
-        double desired = wrapDegrees(targetAngle - robotAngle - turretZeroOffset);
+        double desired = targetAngle - robotAngle - turretZeroOffset;
+        desired = wrapRelativeTo(desired, 0);
 
-        double currentTicks = -outtakeRotationMotor.getCurrentPosition();
+        currentTicks = -outtakeRotationMotor.getCurrentPosition();
         double currentDegLocal = (currentTicks - turretTicksIntercept) / turretTicksPerDegree;
 
-        // decides if bot should stay in (-180, 180) degree range
-        double error = wrapDegrees(desired - currentDegLocal);
-        error += currentDegLocal;
 
         desiredTurretDeg = desired;
         return desiredTurretDeg;
@@ -254,14 +239,31 @@ public class LancersRobot {
 
     //Adds Limelight tracking to the existing odo logic for turret targeting
     public double getIntegratedAngle(boolean isRed) {
+        double baseAngle = isRed ? getAngleToRed() : getAngleToBlue();
+
+        double ty = limelightWrapper.getTy();
+        // ty represents the error degrees from the turret's angle to the target
+
+        if (Math.abs(ty) < 10 && Math.abs(ty) > 1) {
+            baseAngle += ty * 0.6;
+        }
+
+        return wrapRelativeTo(baseAngle, 0);
+
+
+        /*
         double finalTargetAngle = isRed ? getAngleToRed() : getAngleToBlue();
 
-        if(limelightWrapper.tagSeen()) {
-            double currentTicks = -outtakeRotationMotor.getCurrentPosition();
-            double currentAngle = (currentTicks - turretTicksIntercept) / turretTicksPerDegree;
-            robotAngle = odo.getHeading(AngleUnit.DEGREES);
-            double fieldAngle = robotAngle + currentAngle + limelightWrapper.getBotPose().getX();
-            finalTargetAngle = wrapDegrees(fieldAngle - robotAngle - turretZeroOffset);
+        double currentTicks = -outtakeRotationMotor.getCurrentPosition();
+        double currentAngle = (currentTicks - turretTicksIntercept) / turretTicksPerDegree;
+        robotAngle = odo.getHeading(AngleUnit.DEGREES);
+
+        double poseOffset = 0;
+
+        if (limelightWrapper.getBotPose() != null) {
+            poseOffset = limelightWrapper.getTy();
+            double fieldAngle = robotAngle + currentAngle + poseOffset;
+            finalTargetAngle = wrapDegrees(fieldAngle - turretZeroOffset);
         }
 
         //uncomment this if we get 360 degree movement
@@ -269,6 +271,8 @@ public class LancersRobot {
         //if (finalTargetAngle < -175) finalTargetAngle = -175;
 
         return finalTargetAngle;
+
+         */
     }
 
     public void aimTurretToAngle(double desiredTurretDeg, double kP, double maxPower, double deadbandDeg) {
@@ -295,10 +299,16 @@ public class LancersRobot {
 
         outtakeRotationMotor.setPower(power);
 
-
-        outtakeRotationMotor.setPower(power);
-
         telemetry.addData("Rotation Power:", power);
+    }
+
+    public void holdTurretAngle(double relativeDeg, double maxPower) { // USED FOR AUTON
+
+        double targetTicks = turretDegToTicks(relativeDeg);
+
+        outtakeRotationMotor.setTargetPosition((int)(-targetTicks));
+        outtakeRotationMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        outtakeRotationMotor.setPower(maxPower);
     }
 
 
@@ -355,7 +365,7 @@ public class LancersRobot {
         if (result != null && result.isValid()) {
             double tx = result.getTx();
             double multiplier;
-            multiplier = limelightWrapper.getDistanceToTag();
+            multiplier = limelightWrapper.getDistanceToTag(redMode);
             telemetry.addData("Distance to Tag:", multiplier);
             if (Math.abs(tx) > deadbandTx) {
                 outtakeRotationMotor.setPower(Math.signum(tx) * (multiplier * 0.001));
@@ -397,6 +407,27 @@ public class LancersRobot {
         }
     }
 
+    public double distanceToGoal() {
+        double targetY = 133;
+        double targetX = (redMode) ? 133 : 13;
+        double dx = targetX - odo.getPosX(DistanceUnit.INCH);
+        double dy = targetY - odo.getPosY(DistanceUnit.INCH);
+        return Math.hypot(dx, dy);
+    }
+
+    public void autoAdjustServo() {
+        double distance = distanceToGoal();
+
+        double servoPos = servoLUT.get(distance);
+
+        servoPos = Math.max(0.0, Math.min(1.0, servoPos));
+
+        setServoPosition(servoPos);
+
+        telemetry.addData("Distance to goal: ", distance);
+        telemetry.addData("Servo Pos:", servoPos);
+    }
+
     // ---- UPDATE / TELEMETRY ----
     public void update() {
         ticksPerSec = outtakeMotor.getVelocity(AngleUnit.DEGREES);
@@ -404,12 +435,20 @@ public class LancersRobot {
 
         odo.update();
 
-        if (redMode) {
-            aimTurretToAngle(getAngleToRed(), 0.009, 1, 0.5);
+        //autoAdjustServo();
+
+        // For Teleop Only
+        if (!autonMode) {
+            if (redMode) {
+                //aimTurretToAngle(getAngleToRed(), 0.009, 1, 0.5);
+                aimTurretToAngle(getIntegratedAngle(true), 0.01, 1, 0.5);
+            } else {
+                //aimTurretToAngle(getAngleToBlue(), 0.009, 1, 0.5);
+                aimTurretToAngle(getIntegratedAngle(false), 0.1, 1, 0.5);
+            }
         }
-        else {
-            aimTurretToAngle(getAngleToBlue(), 0.009, 1, 0.5);
-        }
+
+        // For auton, run holdTurretAngle(degree, max_power) to keep the turret pointed at the target
 
 
     }
@@ -433,14 +472,15 @@ public class LancersRobot {
          */
 
         // INTAKE/OUTTAKE POWER/VEL TESTING
-        /*
         telemetry.addData("Ticks per second", ticksPerSec);
         telemetry.addData("Target velocity", outtakeVelocity);
         telemetry.addData("Actual velocity", outtakeMotor.getVelocity());
         telemetry.addData("Outtake 2 power", outtakeTwoPower);
         telemetry.addData("Intake power", intakePower);
+
+         /*
         telemetry.addData("Servo position", servoPosition);
-        */
+
         telemetry.addData("Outtake rotation motor ticks", -outtakeRotationMotor.getCurrentPosition()-outtakeRotationMotorPosition);
 
         // position/pinpoint testing
@@ -449,9 +489,10 @@ public class LancersRobot {
         telemetry.addData("Heading: ", odo.getHeading(AngleUnit.DEGREES));
 
         telemetry.addLine("----------------------------");
-
+          */
         // turret testing
 
+        /*
         telemetry.addData("target ticks", targetTicks);
         telemetry.addData("error ticks", errorTicks);
         telemetry.addData("target angle", targetAngle);
@@ -461,9 +502,7 @@ public class LancersRobot {
         telemetry.addLine("rotation direction: "+((errorTicks<0) ? "clockwise":"counter-clockwise"));
 
         telemetry.addLine("----------------------------");
-
-        telemetry.addData("Current Offset", turretZeroOffset);
-
+         */
         telemetry.update();
     }
 
