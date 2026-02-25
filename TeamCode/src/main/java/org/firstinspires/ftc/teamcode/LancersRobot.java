@@ -23,7 +23,7 @@ public class LancersRobot {
     public static final double DEAD_ZONE_LIMIT = 0.15;
 
     private double turretTicksPerDegree = -4.6733;
-    private double turretTicksIntercept = 3.6;
+    private double turretTicksIntercept = -3.6;
     private double turretZeroOffset = 0;
 
     // ---- DRIVETRAIN ----
