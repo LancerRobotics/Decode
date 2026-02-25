@@ -9,8 +9,11 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import org.firstinspires.ftc.teamcode.LancersBotConfig;
 import org.firstinspires.ftc.teamcode.LancersRobot;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
 
 @Autonomous(name = "Red12")
 public class Red12 extends OpMode {
@@ -19,11 +22,20 @@ public class Red12 extends OpMode {
     private Timer pathTimer, opModeTimer;
     private LancersRobot robot;
 
+    private LimelightWrapper limelightWrapper;
+
+    // Drivetrain motors
+    private DcMotorEx leftFront;
+    private DcMotorEx leftRear;
+    private DcMotorEx rightFront;
+    private DcMotorEx rightRear;
+
     // --- STATE MACHINE ---
     public enum PathState {
         STARTPOS_TO_SHOOTPOS,
         SHOOT,
         COLLECT,
+        ALIGN_TO_BALL,
         SHOOTPOS_TO_LEAVEPOS,
         DONE
     }
@@ -36,7 +48,7 @@ public class Red12 extends OpMode {
 
     // Relevant Poses
     private final Pose startPose = new Pose(124, 122, Math.toRadians(45));
-    private final Pose shootPose = new Pose(96, 96, Math.toRadians(0));
+    private final Pose shootPose = new Pose(96, 96, Math.toRadians(45));
     private final Pose leavePose = new Pose(120, 84, Math.toRadians(45));
 
     // Paths
@@ -162,11 +174,13 @@ public class Red12 extends OpMode {
             case STARTPOS_TO_SHOOTPOS: {
 
                 // rotate turret to face the goal
-                robot.holdTurretAngle(46.591,0.4);
+                robot.holdTurretAngle(0,0.4);
 
                 // start intake and outtake for the rest of the auton
-                robot.setOuttakeVelocity(1300);
-                robot.setIntake(1);
+                robot.setOuttakeVelocity(1260);
+                robot.setIntake(0.9);
+
+                robot.setServoPosition(0.44);
 
                 if (justEntered) {
                     follower.followPath(startPosToShootPos, true);
@@ -185,7 +199,7 @@ public class Red12 extends OpMode {
                     justEntered = false;
                 }
 
-                robot.setOuttakeTwoPower(0.45);
+                robot.setOuttakeTwoPower(0.9);
                 if (pathTimer.getElapsedTimeSeconds() >= SHOOT_SECONDS) {
                     robot.setOuttakeTwoPower(0);
                     if (cycleIndex < 3) {

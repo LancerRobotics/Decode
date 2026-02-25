@@ -14,9 +14,15 @@ import org.firstinspires.ftc.teamcode.LancersBotConfig;
 public class flywheelPIDFTuner extends OpMode {
 
     public DcMotorEx flywheelMotor;
+    public DcMotor intakeMotor;
+    public DcMotor feederMotor;
+    public DcMotorEx outtakeRotationMotor;
 
-    public double highVelocity = 1200;
-    public double lowVelocity = 800;
+    public double highVelocity = 1260;
+    public double lowVelocity = 860;
+
+    private double intakePower = 0.0;
+    private double feederPower = 0.0;
 
     double curTargetVelocity = highVelocity;
 
@@ -38,6 +44,14 @@ public class flywheelPIDFTuner extends OpMode {
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, I, D, F);
         flywheelMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         telemetry.addLine("Init Complete");
+
+        intakeMotor = hardwareMap.dcMotor.get(LancersBotConfig.INTAKE_MOTOR);
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        feederMotor = hardwareMap.dcMotor.get(LancersBotConfig.OUTTAKE_MOTOR_TWO);
+
+        outtakeRotationMotor = hardwareMap.get(DcMotorEx.class, LancersBotConfig.OUTTAKE_ROTATION_MOTOR);
+        outtakeRotationMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        outtakeRotationMotor.setPower(0);
     }
 
     @Override
@@ -66,6 +80,16 @@ public class flywheelPIDFTuner extends OpMode {
         if (gamepad1.dpadDownWasPressed()) {
             P -= stepSizes[stepIndex];
         }
+
+        if (gamepad1.leftBumperWasPressed()) {
+            intakePower = (intakePower == 0) ? 0.85 : 0;
+        }
+        if (gamepad1.rightBumperWasPressed()) {
+            feederPower = (feederPower == 0) ? 0.9 : 0;
+        }
+
+        intakeMotor.setPower(intakePower);
+        feederMotor.setPower(feederPower);
 
         //set new PIDF coefficients
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, I, D, F);

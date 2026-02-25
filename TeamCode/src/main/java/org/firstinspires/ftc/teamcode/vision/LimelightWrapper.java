@@ -123,8 +123,11 @@ public class LimelightWrapper {
         return Math.hypot(tagX - botX, tagY - botY);
     }
 
+    public void switchPipeline(int id) {
+        limelight.pipelineSwitch(id);
+    }
+
     public double getBallTy() {
-        limelight.pipelineSwitch(0); // check for purple balls first
         LLResult result = limelight.getLatestResult();
         if (result==null || !result.isValid()) return 0;
 
@@ -136,12 +139,13 @@ public class LimelightWrapper {
             }
         }
 
+        /*
         limelight.pipelineSwitch(1); // now we are checking for greens
         for(LLResultTypes.DetectorResult det : detections) {
             if(Math.abs(det.getTargetYDegrees()) < Math.abs(minTy)) {
                 minTy = det.getTargetYDegrees();
             }
-        }
+        }*/
 
         return minTy == 1e9?0:minTy;
     }
