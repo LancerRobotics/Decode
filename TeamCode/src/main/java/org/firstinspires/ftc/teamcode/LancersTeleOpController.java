@@ -36,7 +36,7 @@ public class LancersTeleOpController {
 
     public void loop(Gamepad gamepad1, Gamepad gamepad2) {
 
-        /*
+
         // Turret "locking" mechanism
         boolean tagVisible = limelightWrapper.tagSeen();
         double turretJoystick = gamepad2.right_stick_x;
@@ -53,7 +53,7 @@ public class LancersTeleOpController {
         } else {
             robot.setOuttakeRotationMotor(0);
         }
-        */
+
 
         if (gamepad1.dpadLeftWasPressed()){
             robot.changeTurretOffset(-10);
@@ -113,8 +113,8 @@ public class LancersTeleOpController {
 
         if (gamepad2.aWasPressed()) {robot.setOriginalTime();}
 
-        //robot.aimReset();
-        //robot.aimOuttakeToTx(0.5);
+        robot.aimReset();
+        robot.aimOuttakeToTx(0.5);
 
         // After the gamepad controls are in, update the robot and send telemetry
         robot.update();
