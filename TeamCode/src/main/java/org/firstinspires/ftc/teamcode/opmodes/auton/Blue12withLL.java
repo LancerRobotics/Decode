@@ -13,10 +13,13 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.LancersBotConfig;
 import org.firstinspires.ftc.teamcode.LancersRobot;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.pedroPathing.pedroDrawing;
 import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
 
-@Autonomous(name = "Blue12")
-public class Blue12 extends OpMode {
+import static org.firstinspires.ftc.teamcode.pedroPathing.pedroDrawing.drawDebug;
+
+@Autonomous(name = "Blue12 with Limelight")
+public class Blue12withLL extends OpMode {
     private Follower follower;
     private Timer pathTimer, opModeTimer;
     private LancersRobot robot;
@@ -48,7 +51,7 @@ public class Blue12 extends OpMode {
 
     // Relevant Poses
     private final Pose startPose = new Pose(20, 122, Math.toRadians(135));
-    private final Pose shootPose = new Pose(60, 84, Math.toRadians(135));
+    private final Pose shootPose = new Pose(48, 96, Math.toRadians(135));
     private final Pose leavePose = new Pose(24, 84, Math.toRadians(135));
 
     // Paths
@@ -284,19 +287,21 @@ public class Blue12 extends OpMode {
                 double ty = limelightWrapper.getBallTy();
 
                 // CONSTANTS
-                double kp = 0.03; // AKA speed of lateral strafe
+                double kp = 0.40; // AKA speed of lateral strafe
                 double forwardPower = 0.3;
 
                 if (follower.getPose().getX() > 24) {
                     follower.breakFollowing();
 
                     double strafePower = kp * ty;
-                    strafePower = Math.max(-0.4, Math.min(0.4, strafePower));
+                    strafePower = Math.max(-0.7, Math.min(0.7, strafePower));
+                    telemetry.addData("Strafe Power: ", strafePower);
+                    telemetry.addData("ty: ", ty);
 
-                    leftFront.setPower(forwardPower - strafePower);
-                    leftRear.setPower(forwardPower + strafePower);
-                    rightFront.setPower(forwardPower + strafePower);
-                    rightRear.setPower(forwardPower - strafePower);
+                    leftFront.setPower(forwardPower + strafePower);
+                    leftRear.setPower(forwardPower - strafePower);
+                    rightFront.setPower(forwardPower - strafePower);
+                    rightRear.setPower(forwardPower + strafePower);
                 } else {
                     leftFront.setPower(0);
                     leftRear.setPower(0);
@@ -362,6 +367,10 @@ public class Blue12 extends OpMode {
 
     @Override
     public void loop() {
+        pedroDrawing.drawDebug(follower);
+        // only needed for debugging purposes, comment out this line during comp
+
+
         follower.update();
         statePathUpdate();
 

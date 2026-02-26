@@ -16,10 +16,11 @@ public class LancersTeleOpRed extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         // Create robot once (hardwareMap + telemetry + gamepads)
-        LancersRobot robot = new LancersRobot(hardwareMap, telemetry, true, true);
+        LancersRobot robot = new LancersRobot(hardwareMap, telemetry, true, true, false);
+        //robot.holdTurretAngle(0, 0.4);
         // outtake speed is currently based off velocity PIDFs, not raw motor power
 
-        LancersTeleOpController controller = new LancersTeleOpController();
+        LancersTeleOpController controller = new LancersTeleOpController(hardwareMap, robot);
 
         waitForStart();
         if (isStopRequested()) return;
@@ -27,11 +28,11 @@ public class LancersTeleOpRed extends LinearOpMode {
         while (opModeIsActive()) {
             if (!started){
                 started = true;
-                robot.odo.setPosX(24, DistanceUnit.INCH);
+                robot.odo.setPosX(120, DistanceUnit.INCH);
                 robot.odo.setPosY(24, DistanceUnit.INCH);
                 robot.odo.setHeading(90, AngleUnit.DEGREES);
             }
-            controller.loop(robot, gamepad1, gamepad2);
+            controller.loop(gamepad1, gamepad2);
         }
     }
 }
