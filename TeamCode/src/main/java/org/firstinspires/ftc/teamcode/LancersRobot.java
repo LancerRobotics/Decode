@@ -188,8 +188,8 @@ public class LancersRobot {
 
     private double wrapRelativeTo(double angle, double center) {
         double diff = angle - center;
-        while (diff >= 180.0) diff -= 360.0;
-        while (diff < -180.0) diff += 360.0;
+        while (diff >= -50) diff -= 360.0;
+        while (diff < -50) diff += 360.0;
         //diff = Math.max(-45.0, Math.min(45.0, diff));
         return center + diff;
     }
@@ -450,16 +450,14 @@ public class LancersRobot {
         //autoAdjustServo();
 
 
-        //turretController.update(); // TODO: Add the new turret controller class later
-
         // For Teleop Only
         if (!autonMode) {
             if (redMode) {
                 //aimTurretToAngle(getAngleToRed(), 0.009, 1, 0.5);
-                aimTurretToAngle(getIntegratedAngle(true), 0.015, 0.6, 0.25);
+                aimTurretToAngle(getIntegratedAngle(true), 0.015, 0.9, 0.25);
             } else {
                 //aimTurretToAngle(getAngleToBlue(), 0.009, 1, 0.5);
-                aimTurretToAngle(getIntegratedAngle(false), 0.015, 0.6, 0.25);
+                aimTurretToAngle(getIntegratedAngle(false), 0.015, 0.9, 0.25);
             }
         }
 

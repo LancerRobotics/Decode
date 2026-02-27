@@ -20,111 +20,128 @@ public class Blue15 extends OpMode {
     private LancersRobot robot;
 
     public enum PathState {
-        STARTPOS_TO_SHOOTPOS,
-        SHOOT,
-        COLLECT,
-        WAIT_AFTER_GATE,
-        SHOOTPOS_TO_LEAVEPOS,
+        START_TO_SHOOT,
+        SHOOT_1,
+        COLLECT_1_OUT,
+        COLLECT_1_BACK,
+        SHOOT_2,
+        COLLECT_2_OUT,
+        WAIT_GATE,
+        COLLECT_2_BACK,
+        SHOOT_3,
+        COLLECT_3_OUT,
+        COLLECT_3_BACK,
+        SHOOT_4,
+        COLLECT_4_OUT,
+        COLLECT_4_BACK,
+        SHOOT_5,
+        PARK,
         DONE
     }
 
     private PathState pathState;
     private boolean justEntered = true;
 
-    private int cycleIndex = 0;
+    // Key poses
+    private final Pose startPose    = new Pose(23.978, 122.736, Math.toRadians(138.630));
+    private final Pose shootPose = new Pose(48,  96, Math.toRadians(135));
 
-    private final Pose startPose = new Pose(20, 122, Math.toRadians(136));
-    private final Pose shootPose = new Pose(48, 96, Math.toRadians(136));
-    private final Pose leavePose = new Pose(32, 80, Math.toRadians(136));
-    private final Pose gatePose = new Pose(11.5, 58.5, Math.toRadians(145));
+    private final Pose collect1Pose = new Pose(18.764,  59.357, Math.toRadians(180));
+    private final Pose collect2Pose = new Pose( 8.909,  59.707, Math.toRadians(135));
+    private final Pose collect3Pose = new Pose(16.140,  84.462, Math.toRadians(180));
+    private final Pose collect4Pose = new Pose(16.160,  35.446, Math.toRadians(180));
 
-    private PathChain startPosToShootPos, shootPosToLeavePos;
-    private PathChain collectFirstBalls, collectSecondBalls, collectThirdBalls;
-    private PathChain shootPosToGatePos, gatePosToShootPos;
+    private final Pose parkPose     = new Pose(54.384, 107.059, Math.toRadians(180));
 
-    private static final double SHOOT_SECONDS = 1.5;
+    // Path 1-8 match the JSON segments; path9 and parkPath split the original JSON Path 9
+    private PathChain path1, path2, path3, path4, path5, path6, path7, path8, path9, parkPath;
+
+    private static final double SHOOT_SECONDS     = 1.0;
+    private static final double GATE_WAIT_SECONDS = 4.0;
 
     public void buildPaths() {
-
-        startPosToShootPos = follower.pathBuilder()
+        // Path 1: start -> shoot (BezierLine, constant 135°)
+        path1 = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, shootPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
+                .setConstantHeadingInterpolation(Math.toRadians(135))
                 .build();
 
-        shootPosToLeavePos = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, leavePose))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), leavePose.getHeading())
-                .build();
-
-        collectFirstBalls = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, new Pose(48.000, 92.000)))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(180))
+        // Path 2: shoot -> collect1 (BezierCurve, linear 135->180°)
+        path2 = follower.pathBuilder()
                 .addPath(new BezierCurve(
-                        new Pose(48.000, 92.000),
-                        new Pose(49.941, 82.414),
-                        new Pose(43.000, 84.000)
+                        shootPose,
+                        new Pose(50.428, 53.484),
+                        collect1Pose
                 ))
                 .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-                .addPath(new BezierLine(
-                        new Pose(43.000, 84.000),
-                        new Pose(36.000, 84.000)
-                ))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .addPath(new BezierLine(
-                        new Pose(36, 84),
-                        shootPose
-                ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
                 .build();
 
-        collectSecondBalls = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, new Pose(48.000, 92.000)))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(180))
+        // Path 3: collect1 -> shoot (BezierCurve, linear 180->135°)
+        path3 = follower.pathBuilder()
                 .addPath(new BezierCurve(
-                        new Pose(48.000, 92.000),
-                        new Pose(49.941, 58),
-                        new Pose(43.000, 60.000)
+                        collect1Pose,
+                        new Pose(38.174, 77.246),
+                        shootPose
+                ))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                .build();
+
+        // Path 4: shoot -> collect2 (BezierCurve, constant 135°)
+        path4 = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        shootPose,
+                        new Pose(38.615, 73.909),
+                        collect2Pose
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(135))
+                .build();
+
+        // Path 5: collect2 -> shoot (BezierCurve, constant 135°)
+        path5 = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        collect2Pose,
+                        new Pose(47.442, 55.631),
+                        shootPose
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(135))
+                .build();
+
+        // Path 6: shoot -> collect3 (BezierCurve, linear 135->180°)
+        path6 = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        shootPose,
+                        new Pose(40.335, 82.340),
+                        collect3Pose
                 ))
                 .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-                .addPath(new BezierLine(
-                        new Pose(43.000, 60.000),
-                        new Pose(30, 60.000)
+                .build();
+
+        // Path 7: collect3 -> shoot (BezierLine, linear 180->180°)
+        path7 = follower.pathBuilder()
+                .addPath(new BezierLine(collect3Pose, shootPose))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .build();
+
+        // Path 8: shoot -> collect4 (BezierCurve, linear 180->180°)
+        path8 = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        shootPose,
+                        new Pose(50.205, 26.088),
+                        collect4Pose
                 ))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .build();
+
+        // Path 9: collect4 -> final shoot position (BezierLine, constant 180°)
+        path9 = follower.pathBuilder()
+                .addPath(new BezierLine(collect4Pose, shootPose))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
-                .addPath(new BezierLine(
-                        new Pose(30, 60),
-                        shootPose
-                ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
                 .build();
 
-        collectThirdBalls = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, new Pose(48.000, 42.000)))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(180))
-                .addPath(new BezierLine(
-                        new Pose(48, 42.000),
-                        new Pose(30, 42.000)
-                ))
+        // Park: final shoot position -> park (BezierLine, constant 180°)
+        parkPath = follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, parkPose))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
-                .addPath(new BezierLine(
-                        new Pose(30, 42),
-                        shootPose
-                ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
-                .build();
-
-        shootPosToGatePos = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, new Pose(44, 58.5)))
-                .setConstantHeadingInterpolation(Math.toRadians(136))
-                .addPath(new BezierLine(new Pose(44, 58.5), gatePose))
-                .setLinearHeadingInterpolation(Math.toRadians(136), gatePose.getHeading())
-                .build();
-
-        gatePosToShootPos = follower.pathBuilder()
-                .addPath(new BezierLine(gatePose, new Pose(44, 58.5)))
-                .setLinearHeadingInterpolation(gatePose.getHeading(), Math.toRadians(136))
-                .addPath(new BezierLine(new Pose(44, 58.5), shootPose))
-                .setConstantHeadingInterpolation(Math.toRadians(136))
                 .build();
     }
 
@@ -134,89 +151,146 @@ public class Blue15 extends OpMode {
         justEntered = true;
     }
 
-    private PathChain getCollectPathForCycle(int cycleIndex) {
-        switch (cycleIndex) {
-            case 0: return collectSecondBalls;
-            case 1: return shootPosToGatePos;
-            case 2: return gatePosToShootPos;
-            case 3: return collectFirstBalls;
-            default: return collectThirdBalls;
-        }
-    }
-
     private void statePathUpdate() {
         switch (pathState) {
 
-            case STARTPOS_TO_SHOOTPOS: {
-
-                robot.setOuttakeVelocity(1500);
+            case START_TO_SHOOT: {
+                robot.setOuttakeVelocity(1300);
                 robot.setIntake(1);
-
+                robot.setServoPosition(0.5);
                 if (justEntered) {
-                    follower.followPath(startPosToShootPos, true);
+                    follower.followPath(path1, true);
                     justEntered = false;
                 }
                 if (!follower.isBusy()) {
-                    cycleIndex = 0;
-                    setPathState(PathState.SHOOT);
+                    setPathState(PathState.SHOOT_1);
                 }
                 break;
             }
 
-            case SHOOT: {
+            case SHOOT_1:
+            case SHOOT_2:
+            case SHOOT_3:
+            case SHOOT_4:
+            case SHOOT_5: {
                 if (justEntered) {
                     justEntered = false;
                 }
-
                 robot.setOuttakeTwoPower(1);
                 if (pathTimer.getElapsedTimeSeconds() >= SHOOT_SECONDS) {
                     robot.setOuttakeTwoPower(0);
-                    if (cycleIndex < 5) {
-                        setPathState(PathState.COLLECT);
-                    } else {
-                        setPathState(PathState.SHOOTPOS_TO_LEAVEPOS);
-                    }
+                    if      (pathState == PathState.SHOOT_1) setPathState(PathState.COLLECT_1_OUT);
+                    else if (pathState == PathState.SHOOT_2) setPathState(PathState.COLLECT_2_OUT);
+                    else if (pathState == PathState.SHOOT_3) setPathState(PathState.COLLECT_3_OUT);
+                    else if (pathState == PathState.SHOOT_4) setPathState(PathState.COLLECT_4_OUT);
+                    else                                     setPathState(PathState.PARK);
                 }
                 break;
             }
 
-            case COLLECT: {
+            case COLLECT_1_OUT: {
                 if (justEntered) {
-                    follower.followPath(getCollectPathForCycle(cycleIndex), true);
+                    follower.followPath(path2, true);
                     justEntered = false;
                 }
-
                 if (!follower.isBusy()) {
-                    if (cycleIndex == 1) {
-                        cycleIndex++;
-                        setPathState(PathState.COLLECT);
-                    } else if (cycleIndex == 2) {
-                        cycleIndex++;
-                        setPathState(PathState.WAIT_AFTER_GATE);
-                    } else {
-                        cycleIndex++;
-                        setPathState(PathState.SHOOT);
-                    }
+                    setPathState(PathState.COLLECT_1_BACK);
                 }
                 break;
             }
 
-            case WAIT_AFTER_GATE: {
+            case COLLECT_1_BACK: {
                 if (justEntered) {
+                    follower.followPath(path3, true);
                     justEntered = false;
                 }
-                if (pathTimer.getElapsedTimeSeconds() >= 1.5) {
-                    setPathState(PathState.COLLECT);
+                if (!follower.isBusy()) {
+                    setPathState(PathState.SHOOT_2);
                 }
                 break;
             }
 
-            case SHOOTPOS_TO_LEAVEPOS: {
+            case COLLECT_2_OUT: {
                 if (justEntered) {
-                    follower.followPath(shootPosToLeavePos, true);
+                    follower.followPath(path4, true);
                     justEntered = false;
                 }
+                if (!follower.isBusy()) {
+                    setPathState(PathState.WAIT_GATE);
+                }
+                break;
+            }
 
+            case WAIT_GATE: {
+                if (justEntered) {
+                    justEntered = false;
+                }
+                if (pathTimer.getElapsedTimeSeconds() >= GATE_WAIT_SECONDS) {
+                    setPathState(PathState.COLLECT_2_BACK);
+                }
+                break;
+            }
+
+            case COLLECT_2_BACK: {
+                if (justEntered) {
+                    follower.followPath(path5, true);
+                    justEntered = false;
+                }
+                if (!follower.isBusy()) {
+                    setPathState(PathState.SHOOT_3);
+                }
+                break;
+            }
+
+            case COLLECT_3_OUT: {
+                if (justEntered) {
+                    follower.followPath(path6, true);
+                    justEntered = false;
+                }
+                if (!follower.isBusy()) {
+                    setPathState(PathState.COLLECT_3_BACK);
+                }
+                break;
+            }
+
+            case COLLECT_3_BACK: {
+                if (justEntered) {
+                    follower.followPath(path7, true);
+                    justEntered = false;
+                }
+                if (!follower.isBusy()) {
+                    setPathState(PathState.SHOOT_4);
+                }
+                break;
+            }
+
+            case COLLECT_4_OUT: {
+                if (justEntered) {
+                    follower.followPath(path8, true);
+                    justEntered = false;
+                }
+                if (!follower.isBusy()) {
+                    setPathState(PathState.COLLECT_4_BACK);
+                }
+                break;
+            }
+
+            case COLLECT_4_BACK: {
+                if (justEntered) {
+                    follower.followPath(path9, true);
+                    justEntered = false;
+                }
+                if (!follower.isBusy()) {
+                    setPathState(PathState.SHOOT_5);
+                }
+                break;
+            }
+
+            case PARK: {
+                if (justEntered) {
+                    follower.followPath(parkPath, true);
+                    justEntered = false;
+                }
                 if (!follower.isBusy()) {
                     setPathState(PathState.DONE);
                 }
@@ -244,7 +318,7 @@ public class Blue15 extends OpMode {
         buildPaths();
         follower.setPose(startPose);
 
-        setPathState(PathState.STARTPOS_TO_SHOOTPOS);
+        setPathState(PathState.START_TO_SHOOT);
     }
 
     @Override
@@ -260,7 +334,6 @@ public class Blue15 extends OpMode {
         statePathUpdate();
 
         telemetry.addData("Path State", pathState.toString());
-        telemetry.addData("Cycle Index", cycleIndex);
         telemetry.addData("X", follower.getPose().getX());
         telemetry.addData("Y", follower.getPose().getY());
         telemetry.addData("Heading", follower.getPose().getHeading());
