@@ -158,7 +158,7 @@ public class Blue15 extends OpMode {
         switch (pathState) {
 
             case START_TO_SHOOT: {
-                robot.setOuttakeVelocity(1300);
+                robot.setOuttakeVelocity(960);
                 robot.setIntake(1);
                 robot.setServoPosition(0.5);
                 if (justEntered) {

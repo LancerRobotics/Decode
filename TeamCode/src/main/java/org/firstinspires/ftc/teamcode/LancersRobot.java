@@ -145,16 +145,9 @@ public class LancersRobot {
 
         if (outtakeVelIsOn) {
             outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            PIDFCoefficients farShootingPIDF = new PIDFCoefficients(140.00, 0, 0, 28.00); // far shooting
+            PIDFCoefficients closeShootingPIDF = new PIDFCoefficients(34.000, 0, 0, 7.200); // preferred velocity is 940-960
 
-            PIDFCoefficients otherPIDF = new PIDFCoefficients(120, 1, 10, 20.5);
-
-            PIDFCoefficients tempPIDF = new PIDFCoefficients(120, 0, 0, 3); // around 1080?
-            //PIDFCoefficients pidf = new PIDFCoefficients(70, 0, 0, 30);
-
-            // 2/21/26
-            PIDFCoefficients tempPIDF2 = new PIDFCoefficients(68, 0, 0, 24.4);
-            outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, tempPIDF);
+            outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, closeShootingPIDF);
         }
         else {
             outtakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

@@ -214,7 +214,7 @@ public class Blue12 extends OpMode {
             case STARTPOS_TO_SHOOTPOS: {
 
                 // start intake and outtake for the rest of the auton
-                robot.setOuttakeVelocity(1260);
+                robot.setOuttakeVelocity(940);
                 robot.setIntake(0.9);
 
                 robot.setServoPosition(1);
