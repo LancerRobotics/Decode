@@ -1,14 +1,18 @@
 package org.firstinspires.ftc.teamcode.vision;
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.LancersBotConfig;
 
 import com.pedropathing.geometry.Pose;
+import org.firstinspires.ftc.teamcode.LancersRobot;
 
 import java.util.List;
 import java.util.Arrays;
@@ -31,40 +35,37 @@ public class LimelightWrapper {
         limelight.start();
     }
 
-    // returns a 2D pose with heading (in radians) if an april tag is found
+    // returns a 2D pose with heading (in radians) if an april tag is found.
+    // Uses getRobotPoseFieldSpace() per-fiducial (not getBotpose()) so the pose
+    // is tied to a specific known tag, giving a more reliable field-space position.
     public Pose getBotPose() {
 
         LLResult result = limelight.getLatestResult();
         if (result == null || !result.isValid()) return null;
 
         List<LLResultTypes.FiducialResult> tags = result.getFiducialResults();
-        boolean validTagSeen = false;
+        LLResultTypes.FiducialResult validFr = null;
 
         tagId = 0;
 
         for (LLResultTypes.FiducialResult fr : tags) {
             int id = fr.getFiducialId();
             if (id == 20 || id == 24) {
-                validTagSeen = true;
+                validFr = fr;
                 tagId = id;
                 break;
             }
         }
 
-        if (!validTagSeen) return null;
+        if (validFr == null) return null;
 
-        Pose3D botpose = result.getBotpose();
-        if (botpose == null) return null;
+        Pose3D cameraPose = validFr.getRobotPoseFieldSpace();
+        if (cameraPose == null) return null;
 
-        // convert meters to inches
-        double xIn = botpose.getPosition().x * 39.37;
-        double yIn = botpose.getPosition().y * 39.37;
-
-        // Convert yaw degrees -> radians for pedro
-        double headingRad = Math.toRadians(botpose.getOrientation().getYaw());
-
-        xIn += PEDRO_X_OFFSET_IN;
-        yIn += PEDRO_Y_OFFSET_IN;
+        // convert meters to inches and shift field origin from center to corner (+72)
+        double xIn = cameraPose.getPosition().x * 39.37 + PEDRO_X_OFFSET_IN;
+        double yIn = cameraPose.getPosition().y * 39.37 + PEDRO_Y_OFFSET_IN;
+        double headingRad = Math.toRadians(cameraPose.getOrientation().getYaw());
 
         return new Pose(xIn, yIn, headingRad);
     }
@@ -178,6 +179,46 @@ public class LimelightWrapper {
             return false;
         }
     }
+    /**
+     * Writes the corrected vision pose (X, Y) into the Pinpoint odometry to correct drift.
+     * Call this periodically (e.g. every 500-5000 ms) when a valid AprilTag is visible.
+     *
+     * Accounts for the Limelight being on a rotating turret: getBotpose() uses a static
+     * camera offset that is only accurate when the turret is at zero. This method back-calculates
+     * the true robot center using the current turret encoder angle and trig.
+     *
+     * Set LancersRobot.TURRET_OFFSET_TO_ROBOT_IN to the measured distance (inches) from the
+     * turret pivot to the robot's odometry center before using this in competition.
+     *
+     * @param turretDeg current physical turret angle in degrees (from getCurrentTurretDeg())
+     * @return true if a valid tag was seen and the pose was applied, false otherwise.
+     */
+    public boolean calibratePinpoint(GoBildaPinpointDriver odo, double turretDeg) {
+        Pose pose = getBotPose();
+        if (pose == null) return false;
+
+        double turretRad = Math.toRadians(turretDeg);
+        double cameraHeadingRad = pose.getHeading();
+
+        // Robot heading = camera heading - turret rotation (from encoder, no odo used)
+        double driveH = cameraHeadingRad - turretRad;
+
+        // Step 1: camera → turret pivot
+        // The camera orbits the turntable center as the turret rotates, so walk back
+        // along the camera's current heading to find the pivot position.
+        double pivotX = pose.getX() - Math.cos(cameraHeadingRad) * LancersRobot.CAMERA_TO_PIVOT_IN;
+        double pivotY = pose.getY() - Math.sin(cameraHeadingRad) * LancersRobot.CAMERA_TO_PIVOT_IN;
+
+        // Step 2: turret pivot → robot odometry center
+        // The pivot is offset from the robot center along the robot's forward heading.
+        double driveX = pivotX - Math.cos(driveH) * LancersRobot.PIVOT_TO_ROBOT_CENTER_IN;
+        double driveY = pivotY - Math.sin(driveH) * LancersRobot.PIVOT_TO_ROBOT_CENTER_IN;
+
+        odo.setPosX(driveX, DistanceUnit.INCH);
+        odo.setPosY(driveY, DistanceUnit.INCH);
+        return true;
+    }
+
     public void stop() {
         limelight.stop();
     }
