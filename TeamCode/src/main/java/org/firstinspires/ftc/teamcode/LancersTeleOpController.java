@@ -126,6 +126,8 @@ public class LancersTeleOpController {
 
         if (gamepad1.xWasPressed()) {robot.relocalizeRobot();}
 
+        if (gamepad1.dpadRightWasPressed()) {robot.setTurretMode();}
+
         //robot.aimReset();
         //robot.aimOuttakeToTx(0.5);
 

@@ -46,7 +46,7 @@ public class Blue12_OPENGATE extends OpMode {
     private final Pose shootPose    = new Pose(48+4,  96+4, Math.toRadians(130));
 
     private final Pose collect1Pose = new Pose(19.81065629860031,  57.91539813374804, Math.toRadians(180));
-    private final Pose gatePose     = new Pose(17.088646967340587,      68.19284603421464,     Math.toRadians(180));
+    private final Pose gatePose     = new Pose(19.088646967340587,      68.19284603421464,     Math.toRadians(180));
     private final Pose collect3Pose = new Pose(23.160,  84.462, Math.toRadians(180));
     private final Pose collect4Pose = new Pose(19.160,  35.446, Math.toRadians(180));
 

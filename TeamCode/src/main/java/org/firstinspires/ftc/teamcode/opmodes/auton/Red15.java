@@ -12,8 +12,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.LancersRobot;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Blue15")
-public class Blue15 extends OpMode {
+@Autonomous(name = "Red15")
+public class Red15 extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
@@ -42,109 +42,108 @@ public class Blue15 extends OpMode {
     private PathState pathState;
     private boolean justEntered = true;
 
-    // Key poses
-    private final Pose startPose    = new Pose(20.477189627228526, 122.736, Math.toRadians(144));
-    private final Pose shootPose = new Pose(60,  84, Math.toRadians(135));
+    // Key poses — reflected from blue side: x → 144-x, angle → 180°-angle, y unchanged
+    private final Pose startPose    = new Pose(144-20.477189627228526, 122.736, Math.toRadians(180-144));
+    private final Pose shootPose    = new Pose(144-48,  96, Math.toRadians(180-135));
 
-    private final Pose collect1Pose = new Pose( 18.764,  59.707, Math.toRadians(135));
-    private final Pose collect2Pose = new Pose( 8.909,  59.707, Math.toRadians(135));
-    private final Pose collect3Pose = new Pose(16.140,  84.462, Math.toRadians(180));
-    private final Pose collect4Pose = new Pose(16.160,  35.446, Math.toRadians(180));
-    private final Pose parkPose     = new Pose(54.384, 107.059, Math.toRadians(180));
+    private final Pose collect1Pose = new Pose(144-18.764,  59.707, Math.toRadians(180-135));
+    private final Pose collect2Pose = new Pose(144-8.909,   59.707, Math.toRadians(180-135));
+    private final Pose collect3Pose = new Pose(144-16.140,  84.462, Math.toRadians(180-180));
+    private final Pose collect4Pose = new Pose(144-16.160,  35.446, Math.toRadians(180-180));
+    private final Pose parkPose     = new Pose(144-54.384, 107.059, Math.toRadians(180-180));
 
-    // Path 1-8 match the JSON segments; path9 and parkPath split the original JSON Path 9
     private PathChain path1, path2, path3, path4, path5, path6, path7, path8, path9, parkPath;
 
     private static final double SHOOT_SECONDS     = 1.0;
     private static final double GATE_WAIT_SECONDS = 4.0;
 
     public void buildPaths() {
-        // Path 1: start -> shoot (BezierLine, constant 135°)
+        // Path 1: start -> shoot
         path1 = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, shootPose))
-                .setConstantHeadingInterpolation(Math.toRadians(135))
+                .setConstantHeadingInterpolation(Math.toRadians(180-135))
                 .build();
 
-        // Path 2: shoot -> collect1 (BezierCurve, linear 135->180°)
+        // Path 2: shoot -> collect1
         path2 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         shootPose,
-                        new Pose(50.428, 53.484),
+                        new Pose(144-50.428, 53.484),
                         collect1Pose
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(180-135), Math.toRadians(180-180))
                 .build();
 
-        // Path 3: collect1 -> shoot (BezierCurve, linear 180->135°)
+        // Path 3: collect1 -> shoot
         path3 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         collect1Pose,
-                        new Pose(38.3682, 53.2951),
+                        new Pose(144-38.3682, 53.2951),
                         shootPose
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(180-180), Math.toRadians(180-135))
                 .build();
 
-        // Path 4: shoot -> collect2 (BezierCurve, constant 135°)
+        // Path 4: shoot -> collect2
         path4 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         shootPose,
-                        new Pose(38.615, 73.909),
+                        new Pose(144-38.615, 73.909),
                         collect2Pose
                 ))
-                .setConstantHeadingInterpolation(Math.toRadians(135))
+                .setConstantHeadingInterpolation(Math.toRadians(180-135))
                 .build();
 
-        // Path 5: collect2 -> shoot (BezierCurve, constant 135°)
+        // Path 5: collect2 -> shoot
         path5 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         collect2Pose,
-                        new Pose(47.442, 55.631),
+                        new Pose(144-47.442, 55.631),
                         shootPose
                 ))
-                .setConstantHeadingInterpolation(Math.toRadians(135))
+                .setConstantHeadingInterpolation(Math.toRadians(180-135))
                 .build();
 
-        // Path 6: shoot -> collect3 (BezierCurve, linear 135->180°)
+        // Path 6: shoot -> collect3
         path6 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         shootPose,
-                        new Pose(40.335, 82.340),
+                        new Pose(144-40.335, 82.340),
                         collect3Pose
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(180-135), Math.toRadians(180-180))
                 .build();
 
-        // Path 7: collect3 -> shoot (BezierLine, linear 180->180°)
+        // Path 7: collect3 -> shoot
         path7 = follower.pathBuilder()
                 .addPath(new BezierLine(collect3Pose, shootPose))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(180-180), Math.toRadians(180-180))
                 .build();
 
-        // Path 8: shoot -> collect4 (BezierCurve, linear 180->180°)
+        // Path 8: shoot -> collect4
         path8 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         shootPose,
-                        new Pose(50.205, 26.088),
+                        new Pose(144-50.205, 26.088),
                         collect4Pose
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(180-180), Math.toRadians(180-180))
                 .build();
 
-        // Path 9: collect4 -> final shoot position (BezierLine, constant 180°)
+        // Path 9: collect4 -> shoot
         path9 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         collect4Pose,
-                        new Pose(35.817, 39.716),
+                        new Pose(144-35.817, 39.716),
                         shootPose
                 ))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(180-180), Math.toRadians(180-135))
                 .build();
 
-        // Park: final shoot position -> park (BezierLine, constant 180°)
+        // Park
         parkPath = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, parkPose))
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(90))
+                .setLinearHeadingInterpolation(Math.toRadians(180-135), Math.toRadians(180-90))
                 .build();
     }
 
@@ -314,7 +313,7 @@ public class Blue15 extends OpMode {
         opModeTimer = new Timer();
         opModeTimer.resetTimer();
 
-        robot = new LancersRobot(hardwareMap, telemetry, true, false, true);
+        robot = new LancersRobot(hardwareMap, telemetry, true, true, true);
 
         follower = Constants.createFollower(hardwareMap);
 

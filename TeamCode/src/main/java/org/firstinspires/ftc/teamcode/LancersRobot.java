@@ -61,6 +61,8 @@ public class LancersRobot {
     private boolean redMode; // true for red, false for blue
     private boolean autonMode;
 
+    public boolean turretMode = true;
+
     // ---- LIMELIGHT DEBUG ----
     private double llTy = 0;
     private double llBaseAngle = 0;
@@ -89,7 +91,7 @@ public class LancersRobot {
     private InterpLUT servoLUT;
 
     // PIDF For Outtake
-    private PIDFCoefficients closeShootingPIDF = new PIDFCoefficients(65, 0, 0, 5.5); // preferred velocity is 940-960
+    private PIDFCoefficients closeShootingPIDF = new PIDFCoefficients(80, 0, 0, 14); // preferred velocity is 1020, set to 1080
     private PIDFCoefficients farShootingPIDF = new  PIDFCoefficients(60.000, 0, 0, 19.000); // preferred velocity is ~1240
 
     public LancersRobot(HardwareMap hardwareMap, Telemetry telem, boolean outtakeVelIsOn, boolean redMode, boolean autonMode) {
@@ -183,10 +185,10 @@ public class LancersRobot {
      ***/
 
     public double getXToRed() {
-        return 131 - odo.getPosY(DistanceUnit.INCH);
+        return 137 - odo.getPosY(DistanceUnit.INCH);
     }
     public double getXToBlue() {
-        return odo.getPosY(DistanceUnit.INCH) - 13;
+        return odo.getPosY(DistanceUnit.INCH) - 7;
     }
     public double getY() {
         return 133 - odo.getPosX(DistanceUnit.INCH);
@@ -396,9 +398,12 @@ public class LancersRobot {
             }
             else if (odo.getPosY(DistanceUnit.INCH) >= 48) { // close launching
                 outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, closeShootingPIDF);
-                outtakeMotor.setVelocity(1260); // 980-1020 in reality
-                setServoPosition(0.91);
+                outtakeMotor.setVelocity(1080); // 980-1020 in reality
+                setServoPosition(1);
             }
+        }
+        else {
+            outtakeMotor.setVelocity(0);
         }
     }
 
@@ -430,6 +435,10 @@ public class LancersRobot {
         } else {
             outtakeRotationMotor.setPower(0);
         }
+    }
+
+    public void setTurretMode() {
+        turretMode = !turretMode;
     }
 
     private boolean setOriginalTime = false;
@@ -509,7 +518,6 @@ public class LancersRobot {
         if (!autonMode) {
             if (redMode) {
                 //aimTurretToAngle(getAngleToRed(), 0.009, 1, 0.5);
-                aimTurretToAngle(getIntegratedAngle(true), 0.8, 5);
             } else {
                 //aimTurretToAngle(getAngleToBlue(), 0.009, 1, 0.5);
                 aimTurretToAngle(getIntegratedAngle(false), 0.8, 5);

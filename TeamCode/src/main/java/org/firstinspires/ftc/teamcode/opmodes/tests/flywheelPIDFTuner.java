@@ -19,7 +19,7 @@ public class flywheelPIDFTuner extends OpMode {
     public DcMotorEx outtakeRotationMotor;
 
     public double highVelocity = 1260;
-    public double lowVelocity = 860;
+    public double lowVelocity = 1080;
 
     private double intakePower = 0.0;
     private double feederPower = 0.0;
