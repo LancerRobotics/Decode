@@ -43,7 +43,7 @@ public class Blue15 extends OpMode {
     private boolean justEntered = true;
 
     // Key poses
-    private final Pose startPose    = new Pose(23.978, 122.736, Math.toRadians(138.630));
+    private final Pose startPose    = new Pose(20.477189627228526, 122.736, Math.toRadians(144));
     private final Pose shootPose = new Pose(48,  96, Math.toRadians(135));
 
     private final Pose collect1Pose = new Pose( 18.764,  59.707, Math.toRadians(135));

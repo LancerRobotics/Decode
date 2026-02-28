@@ -47,9 +47,9 @@ public class Blue12 extends OpMode {
     private int cycleIndex = 0;
 
     // Relevant Poses
-    private final Pose startPose = new Pose(20, 122, Math.toRadians(135));
-    private final Pose shootPose = new Pose(60, 84, Math.toRadians(135));
-    private final Pose leavePose = new Pose(24, 84, Math.toRadians(135));
+    private final Pose startPose = new Pose(23.978, 122.736, Math.toRadians(138.630));
+    private final Pose shootPose = new Pose(48+4, 96+4, Math.toRadians(130));
+    private final Pose leavePose = new Pose(36.000, 72.000, Math.toRadians(90));
 
     // Paths
     private PathChain startPosToShootPos, shootPosToLeavePos;
@@ -83,7 +83,7 @@ public class Blue12 extends OpMode {
 
         collectFirstBalls_return = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(24.000+0,84.000),
+                        new Pose(23.160, 84.462),
                         shootPose
                 ))
                 .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
@@ -96,11 +96,11 @@ public class Blue12 extends OpMode {
                 ))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(180))
                 .addPath(new BezierLine(
-                        new Pose(48.000,84.000), new Pose(24.000+0,84.000)
+                        new Pose(48.000,84.000), new Pose(23.160, 84.462)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(new BezierLine(
-                        new Pose(24.000+0,84.000),
+                        new Pose(23.160, 84.462),
                         shootPose
                 ))
                 .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
@@ -117,7 +117,7 @@ public class Blue12 extends OpMode {
 
         collectSecondBalls_return = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(24.000+0,60.000),
+                        new Pose(19.811, 57.915),
                         shootPose
                 ))
                 .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
@@ -130,11 +130,11 @@ public class Blue12 extends OpMode {
                 ))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(180))
                 .addPath(new BezierLine(
-                        new Pose(48.000,60.000), new Pose(24.000+0,60.000)
+                        new Pose(48.000,60.000), new Pose(19.811, 57.915)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(new BezierLine(
-                        new Pose(24.000+0,60.000),
+                        new Pose(19.811, 57.915),
                         shootPose
                 ))
                 .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
@@ -151,7 +151,7 @@ public class Blue12 extends OpMode {
 
         collectThirdBalls_return = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(24.000+0,36.000),
+                        new Pose(19.160, 35.446),
                         shootPose
                 ))
                 .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
@@ -164,11 +164,11 @@ public class Blue12 extends OpMode {
                 ))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), Math.toRadians(180))
                 .addPath(new BezierLine(
-                        new Pose(48.000,36.000), new Pose(24.000+0,36.000)
+                        new Pose(48.000,36.000), new Pose(19.160, 35.446)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(new BezierLine(
-                        new Pose(24.000+0,36.000),
+                        new Pose(19.160, 35.446),
                         shootPose
                 ))
                 .setLinearHeadingInterpolation(Math.toRadians(180), shootPose.getHeading())
@@ -239,8 +239,10 @@ public class Blue12 extends OpMode {
                     justEntered = false;
                 }
 
-                robot.setOuttakeTwoPower(1);
-                if (pathTimer.getElapsedTimeSeconds() >= SHOOT_SECONDS) {
+                if (pathTimer.getElapsedTimeSeconds() >= ((cycleIndex==0) ? 2 : 0)) {
+                    robot.setOuttakeTwoPower(1);
+                }
+                if (pathTimer.getElapsedTimeSeconds() >= ((cycleIndex==0) ? 2 : 0) + SHOOT_SECONDS) {
                     robot.setOuttakeTwoPower(0);
                     if (cycleIndex < 3) {
                         setPathState(PathState.COLLECT); // Goes onto the next collect cycle
