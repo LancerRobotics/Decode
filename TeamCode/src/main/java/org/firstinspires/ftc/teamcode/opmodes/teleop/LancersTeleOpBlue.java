@@ -34,7 +34,7 @@ public class LancersTeleOpBlue extends LinearOpMode {
             }
 
 
-            robot.holdTurretAngle(0, 0.6);
+            //robot.holdTurretAngle(0, 0.6);
 
             /*
             if (robot.turretMode){

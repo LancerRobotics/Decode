@@ -36,7 +36,7 @@ public class BlueFarFinal extends OpMode {
     private boolean justEntered = true;
 
     // Time Constants
-    private static final double SHOOT_SECONDS = 1.0;
+    private static final double SHOOT_SECONDS = 3.0;
     private static final double WAIT_SECONDS = 5.0;
 
     // Starting Pose
@@ -84,15 +84,17 @@ public class BlueFarFinal extends OpMode {
         switch (pathState) {
             case INITIAL_SHOOT:
                 if (justEntered) {
+                    robot.setOuttakePIDF(robot.farShootingPIDF);
                     robot.setOuttakeVelocity(1260);
                     robot.setIntake(1); // TURN ON AND LEAVE ON
+                    robot.setServoPosition(1);
                     justEntered = false;
                 }
-                if (pathTimer.getElapsedTimeSeconds() >= 3.0) {
-                    robot.setOuttakeTwoPower(1);
+                if (pathTimer.getElapsedTimeSeconds() >= 10.0) {
+                    robot.setOuttakeTwoPower(0.9);
                 }
 
-                if (pathTimer.getElapsedTimeSeconds() >= 3+SHOOT_SECONDS) {
+                if (pathTimer.getElapsedTimeSeconds() >= 10+SHOOT_SECONDS) {
                     robot.setOuttakeTwoPower(0);
                     setPathState(PathState.COLLECT_1);
                 }
@@ -114,7 +116,7 @@ public class BlueFarFinal extends OpMode {
                     justEntered = false;
                 }
                 if (!follower.isBusy()) {
-                    robot.setOuttakeTwoPower(1);
+                    robot.setOuttakeTwoPower(0.9);
                     if (pathTimer.getElapsedTimeSeconds() >= SHOOT_SECONDS) {
                         robot.setOuttakeTwoPower(0);
                         setPathState(PathState.COLLECT_2);
@@ -147,7 +149,7 @@ public class BlueFarFinal extends OpMode {
                     justEntered = false;
                 }
                 if (!follower.isBusy()) {
-                    robot.setOuttakeTwoPower(1);
+                    robot.setOuttakeTwoPower(0.9);
                     if (pathTimer.getElapsedTimeSeconds() >= SHOOT_SECONDS) {
                         robot.setOuttakeTwoPower(0);
                         setPathState(PathState.COLLECT_3);
@@ -171,7 +173,7 @@ public class BlueFarFinal extends OpMode {
                     justEntered = false;
                 }
                 if (!follower.isBusy()) {
-                    robot.setOuttakeTwoPower(1);
+                    robot.setOuttakeTwoPower(0.9);
                     if (pathTimer.getElapsedTimeSeconds() >= SHOOT_SECONDS) {
                         robot.setOuttakeTwoPower(0);
                         setPathState(PathState.LEAVE);

@@ -46,6 +46,7 @@ public class LancersTeleOpController {
             lastCalibrationTime = calibrationTimer.milliseconds();
         }
 */
+        /*
         // Turret "locking" mechanism
         boolean tagVisible = limelightWrapper.tagSeen();
         double turretJoystick = gamepad2.right_stick_x;
@@ -70,6 +71,8 @@ public class LancersTeleOpController {
         if (gamepad1.dpadRightWasPressed()){
             robot.changeTurretOffset(10);
         }
+
+         */
 
         // DRIVETRAIN
 
@@ -99,17 +102,19 @@ public class LancersTeleOpController {
         robot.setIntake(intakeOn * intakeDirection);
 
         // OUTTAKE
-        if (gamepad1.dpadDownWasPressed()) {
+        if (gamepad2.rightBumperWasPressed()) {
         //if (gamepad2.rightBumperWasPressed()) {
             //outtakeVel = (outtakeVel == 0.0) ? 1260 : 0.0;
             //outtakePower = (outtakePower == 0.0) ? 1:0;
             robot.setAdjustedOuttakeVelocity();
         }
 
-        if (gamepad1.dpadUpWasPressed()) {
+        if (gamepad2.leftBumperWasPressed()) {
         //if (gamepad2.leftBumperWasPressed()) {
             outtakeTwoPower = (outtakeTwoPower == 0) ? 0.9 : 0;
         }
+
+
 
         //robot.setOuttakeVelocity(outtakeVel);
         //robot.setOuttakePower(outtakePower);
@@ -126,7 +131,7 @@ public class LancersTeleOpController {
 
         if (gamepad1.xWasPressed()) {robot.relocalizeRobot();}
 
-        if (gamepad1.dpadRightWasPressed()) {robot.setTurretMode();}
+        //if (gamepad2.rightBumperWasPressed()) {robot.setTurretMode();}
 
         //robot.aimReset();
         //robot.aimOuttakeToTx(0.5);

@@ -91,8 +91,9 @@ public class LancersRobot {
     private InterpLUT servoLUT;
 
     // PIDF For Outtake
-    private PIDFCoefficients closeShootingPIDF = new PIDFCoefficients(80, 0, 0, 14); // preferred velocity is 1020, set to 1080
-    private PIDFCoefficients farShootingPIDF = new  PIDFCoefficients(60.000, 0, 0, 19.000); // preferred velocity is ~1240
+    public PIDFCoefficients closeShootingPIDF = new PIDFCoefficients(30, 0, 0, 10); // preferred velocity is 1020, set to 1080
+    public PIDFCoefficients farShootingPIDF = new  PIDFCoefficients(60.000, 0, 0, 19.000); // preferred velocity is ~1240
+    public PIDFCoefficients underShootingPIDF = new PIDFCoefficients(22,0,0,7);
 
     public LancersRobot(HardwareMap hardwareMap, Telemetry telem, boolean outtakeVelIsOn, boolean redMode, boolean autonMode) {
 
@@ -394,17 +395,21 @@ public class LancersRobot {
             if (odo.getPosY(DistanceUnit.INCH) < 48) { // far launching
                 outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, farShootingPIDF);
                 outtakeMotor.setVelocity(1240);
-                setServoPosition(0.5);
+                setServoPosition(0.8);
             }
             else if (odo.getPosY(DistanceUnit.INCH) >= 48) { // close launching
                 outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, closeShootingPIDF);
-                outtakeMotor.setVelocity(1080); // 980-1020 in reality
+                outtakeMotor.setVelocity(1260); // 1000-1020 in reality
                 setServoPosition(1);
             }
         }
         else {
             outtakeMotor.setVelocity(0);
         }
+    }
+
+    public void setOuttakePIDF(PIDFCoefficients coefficients) {
+        outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, coefficients);
     }
 
     public void setOuttakePower(double power) {
@@ -439,6 +444,8 @@ public class LancersRobot {
 
     public void setTurretMode() {
         turretMode = !turretMode;
+        if(turretMode)outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, underShootingPIDF);
+        else outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, farShootingPIDF);
     }
 
     private boolean setOriginalTime = false;
@@ -514,6 +521,7 @@ public class LancersRobot {
         //autoAdjustServo();
 
 
+        /*
         // For Teleop Only
         if (!autonMode) {
             if (redMode) {
@@ -523,6 +531,8 @@ public class LancersRobot {
                 aimTurretToAngle(getIntegratedAngle(false), 0.8, 5);
             }
         }
+
+         */
 
         // For auton, run holdTurretAngle(degree, max_power) to keep the turret pointed at a certain angle relative to the robot
 
