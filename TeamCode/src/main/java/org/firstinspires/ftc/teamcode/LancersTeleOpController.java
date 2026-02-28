@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.responses.ClosedLoopControlCoefficients;
 import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
 
@@ -29,24 +30,32 @@ public class LancersTeleOpController {
 
     private LancersRobot robot;
 
+    private final ElapsedTime calibrationTimer = new ElapsedTime();
+    private double lastCalibrationTime = 0;
+
     public LancersTeleOpController(HardwareMap hardwareMap, LancersRobot robot) {
         limelightWrapper = new LimelightWrapper(robot.getHardwareMap());
         this.robot = robot;
     }
 
     public void loop(Gamepad gamepad1, Gamepad gamepad2) {
-
-
+/*
+        // Recalibrate Pinpoint odometry from vision every 500 ms when a tag is visible
+        if (calibrationTimer.milliseconds() - lastCalibrationTime > 5000) {
+            limelightWrapper.calibratePinpoint(robot.odo, robot.getCurrentTurretDeg());
+            lastCalibrationTime = calibrationTimer.milliseconds();
+        }
+*/
         // Turret "locking" mechanism
         boolean tagVisible = limelightWrapper.tagSeen();
         double turretJoystick = gamepad2.right_stick_x;
 
         if (tagVisible && limelightWrapper.getTagId() == 20) {
             // This is the "aimbot" method where the limelight tracks the tag (ever so slightly off)
-            robot.aimTurretToAngle(robot.getIntegratedAngle(false), 0.1,0.8,1);
+            robot.aimTurretToAngle(robot.getIntegratedAngle(false), 0.8,1);
         }
         else if (tagVisible && limelightWrapper.getTagId() == 24) {
-            robot.aimTurretToAngle(robot.getIntegratedAngle(true),0.1,0.8,1);
+            robot.aimTurretToAngle(robot.getIntegratedAngle(true),0.8,1);
         }
         else if (Math.abs(turretJoystick) > 0.1) {
             robot.setOuttakeRotationMotor(turretJoystick);

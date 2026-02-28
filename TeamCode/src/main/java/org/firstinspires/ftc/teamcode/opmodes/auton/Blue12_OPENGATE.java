@@ -12,8 +12,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.LancersRobot;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Blue15")
-public class Blue15 extends OpMode {
+@Autonomous(name = "Blue12 Open Gate")
+public class Blue12_OPENGATE extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
@@ -24,10 +24,10 @@ public class Blue15 extends OpMode {
         SHOOT_1,
         COLLECT_1_OUT,
         COLLECT_1_BACK,
+        GATE_OPEN,
+        GATE_WAIT,
+        GATE_BACK,
         SHOOT_2,
-        COLLECT_2_OUT,
-        WAIT_GATE,
-        COLLECT_2_BACK,
         SHOOT_3,
         COLLECT_3_OUT,
         COLLECT_3_BACK,
@@ -44,28 +44,27 @@ public class Blue15 extends OpMode {
 
     // Key poses
     private final Pose startPose    = new Pose(23.978, 122.736, Math.toRadians(138.630));
-    private final Pose shootPose = new Pose(48,  96, Math.toRadians(135));
+    private final Pose shootPose    = new Pose(48,  96, Math.toRadians(135));
 
-    private final Pose collect1Pose = new Pose( 18.764,  59.707, Math.toRadians(135));
-    private final Pose collect2Pose = new Pose( 8.909,  59.707, Math.toRadians(135));
+    private final Pose collect1Pose = new Pose(18.764,  59.707, Math.toRadians(135));
+    private final Pose gatePose     = new Pose(16,      72,     Math.toRadians(180));
     private final Pose collect3Pose = new Pose(16.140,  84.462, Math.toRadians(180));
     private final Pose collect4Pose = new Pose(16.160,  35.446, Math.toRadians(180));
     private final Pose parkPose     = new Pose(54.384, 107.059, Math.toRadians(180));
 
-    // Path 1-8 match the JSON segments; path9 and parkPath split the original JSON Path 9
-    private PathChain path1, path2, path3, path4, path5, path6, path7, path8, path9, parkPath;
+    private PathChain path1, path2, path3, pathGateOpen, pathGateBack, path6, path7, path8, path9, parkPath;
 
     private static final double SHOOT_SECONDS     = 1.0;
-    private static final double GATE_WAIT_SECONDS = 4.0;
+    private static final double GATE_WAIT_SECONDS = 1.0;
 
     public void buildPaths() {
-        // Path 1: start -> shoot (BezierLine, constant 135°)
+        // Path 1: start -> shoot
         path1 = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, shootPose))
                 .setConstantHeadingInterpolation(Math.toRadians(135))
                 .build();
 
-        // Path 2: shoot -> collect1 (BezierCurve, linear 135->180°)
+        // Path 2: shoot -> collect1
         path2 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         shootPose,
@@ -75,7 +74,7 @@ public class Blue15 extends OpMode {
                 .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                 .build();
 
-        // Path 3: collect1 -> shoot (BezierCurve, linear 180->135°)
+        // Path 3: collect1 -> shoot
         path3 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         collect1Pose,
@@ -85,27 +84,19 @@ public class Blue15 extends OpMode {
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
                 .build();
 
-        // Path 4: shoot -> collect2 (BezierCurve, constant 135°)
-        path4 = follower.pathBuilder()
-                .addPath(new BezierCurve(
-                        shootPose,
-                        new Pose(38.615, 73.909),
-                        collect2Pose
-                ))
-                .setConstantHeadingInterpolation(Math.toRadians(135))
+        // Gate open: shoot -> gate pose (intake off)
+        pathGateOpen = follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, gatePose))
+                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                 .build();
 
-        // Path 5: collect2 -> shoot (BezierCurve, constant 135°)
-        path5 = follower.pathBuilder()
-                .addPath(new BezierCurve(
-                        collect2Pose,
-                        new Pose(47.442, 55.631),
-                        shootPose
-                ))
-                .setConstantHeadingInterpolation(Math.toRadians(135))
+        // Gate back: gate pose -> shoot (intake on)
+        pathGateBack = follower.pathBuilder()
+                .addPath(new BezierLine(gatePose, shootPose))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
                 .build();
 
-        // Path 6: shoot -> collect3 (BezierCurve, linear 135->180°)
+        // Path 6: shoot -> collect3
         path6 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         shootPose,
@@ -115,13 +106,13 @@ public class Blue15 extends OpMode {
                 .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                 .build();
 
-        // Path 7: collect3 -> shoot (BezierLine, linear 180->180°)
+        // Path 7: collect3 -> shoot
         path7 = follower.pathBuilder()
                 .addPath(new BezierLine(collect3Pose, shootPose))
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
 
-        // Path 8: shoot -> collect4 (BezierCurve, linear 180->180°)
+        // Path 8: shoot -> collect4
         path8 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         shootPose,
@@ -131,7 +122,7 @@ public class Blue15 extends OpMode {
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
 
-        // Path 9: collect4 -> final shoot position (BezierLine, constant 180°)
+        // Path 9: collect4 -> shoot
         path9 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         collect4Pose,
@@ -141,7 +132,7 @@ public class Blue15 extends OpMode {
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
                 .build();
 
-        // Park: final shoot position -> park (BezierLine, constant 180°)
+        // Park
         parkPath = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, parkPose))
                 .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(90))
@@ -183,9 +174,8 @@ public class Blue15 extends OpMode {
                 if (pathTimer.getElapsedTimeSeconds() >= SHOOT_SECONDS) {
                     robot.setOuttakeTwoPower(0);
                     if      (pathState == PathState.SHOOT_1) setPathState(PathState.COLLECT_1_OUT);
-                    else if (pathState == PathState.SHOOT_2) setPathState(PathState.COLLECT_2_OUT);
-                    else if (pathState == PathState.SHOOT_3) setPathState(PathState.COLLECT_3_OUT);
-                    else if (pathState == PathState.SHOOT_4) setPathState(PathState.COLLECT_4_OUT);
+                    else if (pathState == PathState.SHOOT_2) setPathState(PathState.COLLECT_3_OUT);
+                    else if (pathState == PathState.SHOOT_3) setPathState(PathState.COLLECT_4_OUT);
                     else                                     setPathState(PathState.PARK);
                 }
                 break;
@@ -208,39 +198,41 @@ public class Blue15 extends OpMode {
                     justEntered = false;
                 }
                 if (!follower.isBusy()) {
-                    setPathState(PathState.SHOOT_2);
+                    setPathState(PathState.GATE_OPEN);
                 }
                 break;
             }
 
-            case COLLECT_2_OUT: {
+            case GATE_OPEN: {
                 if (justEntered) {
-                    follower.followPath(path4, true);
+                    robot.setIntake(0);
+                    follower.followPath(pathGateOpen, true);
                     justEntered = false;
                 }
                 if (!follower.isBusy()) {
-                    setPathState(PathState.WAIT_GATE);
+                    setPathState(PathState.GATE_WAIT);
                 }
                 break;
             }
 
-            case WAIT_GATE: {
+            case GATE_WAIT: {
                 if (justEntered) {
                     justEntered = false;
                 }
                 if (pathTimer.getElapsedTimeSeconds() >= GATE_WAIT_SECONDS) {
-                    setPathState(PathState.COLLECT_2_BACK);
+                    robot.setIntake(1);
+                    setPathState(PathState.GATE_BACK);
                 }
                 break;
             }
 
-            case COLLECT_2_BACK: {
+            case GATE_BACK: {
                 if (justEntered) {
-                    follower.followPath(path5, true);
+                    follower.followPath(pathGateBack, true);
                     justEntered = false;
                 }
                 if (!follower.isBusy()) {
-                    setPathState(PathState.SHOOT_3);
+                    setPathState(PathState.SHOOT_2);
                 }
                 break;
             }
@@ -262,7 +254,7 @@ public class Blue15 extends OpMode {
                     justEntered = false;
                 }
                 if (!follower.isBusy()) {
-                    setPathState(PathState.SHOOT_4);
+                    setPathState(PathState.SHOOT_3);
                 }
                 break;
             }
@@ -284,7 +276,7 @@ public class Blue15 extends OpMode {
                     justEntered = false;
                 }
                 if (!follower.isBusy()) {
-                    setPathState(PathState.SHOOT_5);
+                    setPathState(PathState.SHOOT_4);
                 }
                 break;
             }

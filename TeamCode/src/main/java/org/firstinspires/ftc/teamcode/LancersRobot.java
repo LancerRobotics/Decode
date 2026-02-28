@@ -70,6 +70,14 @@ public class LancersRobot {
     private double llCorrectedAngle = 0;
     private boolean llActive = false;
 
+    // Distance (inches) from the Limelight camera to the turntable center (pivot).
+    // Measure the radius at which the Limelight is mounted on the turntable.
+    public final static double CAMERA_TO_PIVOT_IN = 5.75;
+
+    // Distance (inches) from the turntable center (pivot) to the robot odometry center.
+    // Measure on the real robot and update this value.
+    public final static double PIVOT_TO_ROBOT_CENTER_IN = 1.59;
+
     // ---- STATE ----
     private double servoPosition = 0;
     private double outtakeVelocity = 0.0;
@@ -140,16 +148,9 @@ public class LancersRobot {
 
         if (outtakeVelIsOn) {
             outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            PIDFCoefficients farShootingPIDF = new PIDFCoefficients(140.00, 0, 0, 28.00); // far shooting
+            PIDFCoefficients closeShootingPIDF = new PIDFCoefficients(34.000, 0, 0, 7.200); // preferred velocity is 940-960
 
-            PIDFCoefficients otherPIDF = new PIDFCoefficients(120, 1, 10, 20.5);
-
-            PIDFCoefficients tempPIDF = new PIDFCoefficients(120, 0, 0, 3); // around 1080?
-            //PIDFCoefficients pidf = new PIDFCoefficients(70, 0, 0, 30);
-
-            // 2/21/26
-            PIDFCoefficients tempPIDF2 = new PIDFCoefficients(68, 0, 0, 24.4);
-            outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, tempPIDF);
+            outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, closeShootingPIDF);
         }
         else {
             outtakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -191,8 +192,8 @@ public class LancersRobot {
 
     private double wrapRelativeTo(double angle, double center) {
         double diff = angle - center;
-        while (diff >= 180.0) diff -= 360.0;
-        while (diff < -180.0) diff += 360.0;
+        while (diff >= 0) diff -= 360.0;
+        while (diff < 0) diff += 360.0;
         //diff = Math.max(-45.0, Math.min(45.0, diff));
         return center + diff;
     }
@@ -258,9 +259,12 @@ public class LancersRobot {
         llBaseAngle = baseAngle;
         llActive = Math.abs(ty) < 10 && Math.abs(ty) > 1;
 
+        // We might not need limelight to adjust our turret
+        /*
         if (llActive) {
             baseAngle -= ty * 0.6;
         }
+         */
 
         llCorrectedAngle = baseAngle;
         return wrapRelativeTo(baseAngle, 0);
@@ -290,7 +294,7 @@ public class LancersRobot {
          */
     }
 
-    public void aimTurretToAngle(double desiredTurretDeg, double kP, double maxPower, double deadbandDeg) {
+    public void aimTurretToAngle(double desiredTurretDeg, double maxPower, double deadbandDeg) {
 
         targetTicks = turretDegToTicks(desiredTurretDeg);
 
@@ -306,13 +310,21 @@ public class LancersRobot {
             return;
         }
 
-        // changes power based on delta value of ticks
-        double power = -kP * errorTicks;
+        // changes power based on angle to tag
 
-        if (power > maxPower) power = maxPower;
-        if (power < -maxPower) power = -maxPower;
+        double[] step = {1, 0.8, 0.3, 0.1, 0.05, 0};
 
-        outtakeRotationMotor.setPower(power);
+        double power = 0;
+
+        if (Math.abs(errorTicks) >= 500) power = step[0];
+        if (Math.abs(errorTicks) < 500 && Math.abs(errorTicks) > 200) power = step[1];
+        if (Math.abs(errorTicks) < 200 && Math.abs(errorTicks) > 100) power = step[2];
+        if (Math.abs(errorTicks) < 100 && Math.abs(errorTicks) > 70) power = step[3];
+        if (Math.abs(errorTicks) < 70 && Math.abs(errorTicks) > 30) power = step[4];
+        if (Math.abs(errorTicks) < 30) power = step[5];
+
+        if (errorTicks < 0) outtakeRotationMotor.setPower(power);
+        if (errorTicks > 0) outtakeRotationMotor.setPower(-power);
 
         telemetry.addData("Rotation Power:", power);
     }
@@ -330,6 +342,12 @@ public class LancersRobot {
 
     public void resetOuttakeRotationMotorPosition () {
         outtakeRotationMotorPosition = outtakeRotationMotor.getCurrentPosition();
+    }
+
+    /** Returns the current physical turret angle in degrees (encoder-based, not the target). */
+    public double getCurrentTurretDeg() {
+        double currentTicks = -outtakeRotationMotor.getCurrentPosition();
+        return (currentTicks - turretTicksIntercept) / turretTicksPerDegree;
     }
 
     // ---- DRIVE ----
@@ -453,16 +471,14 @@ public class LancersRobot {
         //autoAdjustServo();
 
 
-        //turretController.update(); // TODO: Add the new turret controller class later
-
         // For Teleop Only
         if (!autonMode) {
             if (redMode) {
                 //aimTurretToAngle(getAngleToRed(), 0.009, 1, 0.5);
-                aimTurretToAngle(getIntegratedAngle(true), 0.015, 0.6, 0.25);
+                aimTurretToAngle(getIntegratedAngle(true), 0.8, 5);
             } else {
                 //aimTurretToAngle(getAngleToBlue(), 0.009, 1, 0.5);
-                aimTurretToAngle(getIntegratedAngle(false), 0.015, 0.6, 0.25);
+                aimTurretToAngle(getIntegratedAngle(false), 0.8, 5);
             }
         }
 

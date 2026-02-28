@@ -28,8 +28,8 @@ public class LancersTeleOpBlue extends LinearOpMode {
         while (opModeIsActive()) {
             if (!started){
                 started = true;
-                robot.odo.setPosX(24, DistanceUnit.INCH);
-                robot.odo.setPosY(24, DistanceUnit.INCH);
+                robot.odo.setPosX(48, DistanceUnit.INCH);
+                robot.odo.setPosY(96, DistanceUnit.INCH);
                 robot.odo.setHeading(90, AngleUnit.DEGREES);
             }
             controller.loop(gamepad1, gamepad2);
