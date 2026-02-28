@@ -287,7 +287,7 @@ public class LancersRobot {
          */
     }
 
-    public void aimTurretToAngle(double desiredTurretDeg, double kP, double maxPower, double deadbandDeg) {
+    public void aimTurretToAngle(double desiredTurretDeg, double maxPower, double deadbandDeg) {
 
         targetTicks = turretDegToTicks(desiredTurretDeg);
 
@@ -303,8 +303,11 @@ public class LancersRobot {
             return;
         }
 
-        // changes power based on delta value of ticks
-        double power = -kP * errorTicks;
+        // changes power based on angle to tag
+
+        int[] step = {10, 5, 1, 0.5, 0.01, 0.001};
+
+        double power = errorTicks;
 
         if (power > maxPower) power = maxPower;
         if (power < -maxPower) power = -maxPower;
