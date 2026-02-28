@@ -132,7 +132,7 @@ public class LancersRobot {
         outtakeMotorTwo.setDirection(DcMotorSimple.Direction.FORWARD);
         outtakeRotationMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         outtakeRotationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // resets stored encoder values and stops motor
-        //outtakeRotationMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        outtakeRotationMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         outtakeRotationMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
          odo = hardwareMap.get(GoBildaPinpointDriver.class, LancersBotConfig.PINPOINT);
@@ -196,8 +196,8 @@ public class LancersRobot {
 
     private double wrapRelativeTo(double angle, double center) {
         double diff = angle - center;
-        while (diff >= -110) diff -= 360.0;
-        while (diff < -110) diff += 360.0;
+        while (diff >= 0) diff -= 360.0;
+        while (diff < 0) diff += 360.0;
         //diff = Math.max(-45.0, Math.min(45.0, diff));
         return center + diff;
     }
@@ -316,14 +316,19 @@ public class LancersRobot {
 
         // changes power based on angle to tag
 
-        int[] step = {10, 5, 1, 0.5, 0.01, 0.001};
+        double[] step = {1, 0.8, 0.3, 0.1, 0.05, 0};
 
-        double power = errorTicks;
+        double power = 0;
 
-        if (power > maxPower) power = maxPower;
-        if (power < -maxPower) power = -maxPower;
+        if (Math.abs(errorTicks) >= 500) power = step[0];
+        if (Math.abs(errorTicks) < 500 && Math.abs(errorTicks) > 200) power = step[1];
+        if (Math.abs(errorTicks) < 200 && Math.abs(errorTicks) > 100) power = step[2];
+        if (Math.abs(errorTicks) < 100 && Math.abs(errorTicks) > 70) power = step[3];
+        if (Math.abs(errorTicks) < 70 && Math.abs(errorTicks) > 30) power = step[4];
+        if (Math.abs(errorTicks) < 30) power = step[5];
 
-        outtakeRotationMotor.setPower(power);
+        if (errorTicks < 0) outtakeRotationMotor.setPower(power);
+        if (errorTicks > 0) outtakeRotationMotor.setPower(-power);
 
         telemetry.addData("Rotation Power:", power);
     }
@@ -474,10 +479,10 @@ public class LancersRobot {
         if (!autonMode) {
             if (redMode) {
                 //aimTurretToAngle(getAngleToRed(), 0.009, 1, 0.5);
-                aimTurretToAngle(getIntegratedAngle(true), 0.015, 0.8, 0.25);
+                aimTurretToAngle(getIntegratedAngle(true), 0.8, 5);
             } else {
                 //aimTurretToAngle(getAngleToBlue(), 0.009, 1, 0.5);
-                aimTurretToAngle(getIntegratedAngle(false), 0.015, 0.8, 0.25);
+                aimTurretToAngle(getIntegratedAngle(false), 0.8, 5);
             }
         }
 
