@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.responses.ClosedLoopControlCoefficients;
 import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
 
@@ -29,6 +30,9 @@ public class LancersTeleOpController {
 
     private LancersRobot robot;
 
+    private final ElapsedTime calibrationTimer = new ElapsedTime();
+    private double lastCalibrationTime = 0;
+
     public LancersTeleOpController(HardwareMap hardwareMap, LancersRobot robot) {
         limelightWrapper = new LimelightWrapper(robot.getHardwareMap());
         this.robot = robot;
@@ -36,6 +40,11 @@ public class LancersTeleOpController {
 
     public void loop(Gamepad gamepad1, Gamepad gamepad2) {
 
+        // Recalibrate Pinpoint odometry from vision every 500 ms when a tag is visible
+        if (calibrationTimer.milliseconds() - lastCalibrationTime > 5000) {
+            limelightWrapper.calibratePinpoint(robot.odo, robot.getCurrentTurretDeg());
+            lastCalibrationTime = calibrationTimer.milliseconds();
+        }
 
         // Turret "locking" mechanism
         boolean tagVisible = limelightWrapper.tagSeen();

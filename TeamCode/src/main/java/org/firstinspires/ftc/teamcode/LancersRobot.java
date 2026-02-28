@@ -67,6 +67,14 @@ public class LancersRobot {
     private double llCorrectedAngle = 0;
     private boolean llActive = false;
 
+    // Distance (inches) from the Limelight camera to the turntable center (pivot).
+    // Measure the radius at which the Limelight is mounted on the turntable.
+    public final static double CAMERA_TO_PIVOT_IN = 5.75;
+
+    // Distance (inches) from the turntable center (pivot) to the robot odometry center.
+    // Measure on the real robot and update this value.
+    public final static double PIVOT_TO_ROBOT_CENTER_IN = 1.59;
+
     // ---- STATE ----
     private double servoPosition = 0;
     private double outtakeVelocity = 0.0;
@@ -124,7 +132,7 @@ public class LancersRobot {
         outtakeMotorTwo.setDirection(DcMotorSimple.Direction.FORWARD);
         outtakeRotationMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         outtakeRotationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // resets stored encoder values and stops motor
-        outtakeRotationMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //outtakeRotationMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         outtakeRotationMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
          odo = hardwareMap.get(GoBildaPinpointDriver.class, LancersBotConfig.PINPOINT);
@@ -188,8 +196,8 @@ public class LancersRobot {
 
     private double wrapRelativeTo(double angle, double center) {
         double diff = angle - center;
-        while (diff >= -50) diff -= 360.0;
-        while (diff < -50) diff += 360.0;
+        while (diff >= -110) diff -= 360.0;
+        while (diff < -110) diff += 360.0;
         //diff = Math.max(-45.0, Math.min(45.0, diff));
         return center + diff;
     }
@@ -255,9 +263,12 @@ public class LancersRobot {
         llBaseAngle = baseAngle;
         llActive = Math.abs(ty) < 10 && Math.abs(ty) > 1;
 
+        // We might not need limelight to adjust our turret
+        /*
         if (llActive) {
             baseAngle -= ty * 0.6;
         }
+         */
 
         llCorrectedAngle = baseAngle;
         return wrapRelativeTo(baseAngle, 0);
@@ -327,6 +338,12 @@ public class LancersRobot {
 
     public void resetOuttakeRotationMotorPosition () {
         outtakeRotationMotorPosition = outtakeRotationMotor.getCurrentPosition();
+    }
+
+    /** Returns the current physical turret angle in degrees (encoder-based, not the target). */
+    public double getCurrentTurretDeg() {
+        double currentTicks = -outtakeRotationMotor.getCurrentPosition();
+        return (currentTicks - turretTicksIntercept) / turretTicksPerDegree;
     }
 
     // ---- DRIVE ----
@@ -454,10 +471,10 @@ public class LancersRobot {
         if (!autonMode) {
             if (redMode) {
                 //aimTurretToAngle(getAngleToRed(), 0.009, 1, 0.5);
-                aimTurretToAngle(getIntegratedAngle(true), 0.015, 0.9, 0.25);
+                aimTurretToAngle(getIntegratedAngle(true), 0.015, 0.8, 0.25);
             } else {
                 //aimTurretToAngle(getAngleToBlue(), 0.009, 1, 0.5);
-                aimTurretToAngle(getIntegratedAngle(false), 0.015, 0.9, 0.25);
+                aimTurretToAngle(getIntegratedAngle(false), 0.015, 0.8, 0.25);
             }
         }
 
