@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.LancersBotConfig;
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(10.52)
-            .forwardZeroPowerAcceleration(-38.092965) //-36.228636, -37.375510
+            .forwardZeroPowerAcceleration(-46.092965) //-36.228636, -37.375510
             .lateralZeroPowerAcceleration(-72.130466) //-63.620337, -76.621186
             .translationalPIDFCoefficients(new PIDFCoefficients(0.05, 0, 0.01, 0.072))
             .headingPIDFCoefficients(new PIDFCoefficients(0.37,0,0.015,0.05))
@@ -51,8 +51,8 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .xVelocity(77.485806)
-            .yVelocity(61.586316);
+            .xVelocity(73.485806)
+            .yVelocity(59.586316);
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(6.5625)

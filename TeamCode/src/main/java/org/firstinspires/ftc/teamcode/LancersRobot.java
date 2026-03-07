@@ -64,6 +64,8 @@ public class LancersRobot {
     private boolean redMode; // true for red, false for blue
     private boolean autonMode;
 
+    public boolean turretMode = true;
+
     // ---- LIMELIGHT DEBUG ----
     private double llTy = 0;
     private double llBaseAngle = 0;
@@ -85,9 +87,16 @@ public class LancersRobot {
     private double intakePower = 0.0;
     private double ticksPerSec;
 
+    private boolean adjustedVelocity;
+
     private HardwareMap hardwareMap;
 
     private InterpLUT servoLUT;
+
+    // PIDF For Outtake
+    public PIDFCoefficients closeShootingPIDF = new PIDFCoefficients(30, 0, 0, 10); // preferred velocity is 1020, set to 1080
+    public PIDFCoefficients farShootingPIDF = new  PIDFCoefficients(60.000, 0, 0, 19.000); // preferred velocity is ~1240
+    public PIDFCoefficients underShootingPIDF = new PIDFCoefficients(22,0,0,7);
 
     public LancersRobot(HardwareMap hardwareMap, Telemetry telem, boolean outtakeVelIsOn, boolean redMode, boolean autonMode) {
 
@@ -148,7 +157,6 @@ public class LancersRobot {
 
         if (outtakeVelIsOn) {
             outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            PIDFCoefficients closeShootingPIDF = new PIDFCoefficients(34.000, 0, 0, 7.200); // preferred velocity is 940-960
 
             outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, closeShootingPIDF);
         }
@@ -181,10 +189,10 @@ public class LancersRobot {
      ***/
 
     public double getXToRed() {
-        return 131 - odo.getPosY(DistanceUnit.INCH);
+        return 137 - odo.getPosY(DistanceUnit.INCH);
     }
     public double getXToBlue() {
-        return odo.getPosY(DistanceUnit.INCH) - 13;
+        return odo.getPosY(DistanceUnit.INCH) - 7;
     }
     public double getY() {
         return 133 - odo.getPosX(DistanceUnit.INCH);
@@ -192,8 +200,8 @@ public class LancersRobot {
 
     private double wrapRelativeTo(double angle, double center) {
         double diff = angle - center;
-        while (diff >= 0) diff -= 360.0;
-        while (diff < 0) diff += 360.0;
+        while (diff >= -45) diff -= 360.0;
+        while (diff < -45) diff += 360.0;
         //diff = Math.max(-45.0, Math.min(45.0, diff));
         return center + diff;
     }
@@ -312,7 +320,7 @@ public class LancersRobot {
 
         // changes power based on angle to tag
 
-        double[] step = {1, 0.8, 0.3, 0.1, 0.05, 0};
+        double[] step = {1, 0.8, 0.4, 0.2, 0.10, 0};
 
         double power = 0;
 
@@ -322,6 +330,7 @@ public class LancersRobot {
         if (Math.abs(errorTicks) < 100 && Math.abs(errorTicks) > 70) power = step[3];
         if (Math.abs(errorTicks) < 70 && Math.abs(errorTicks) > 30) power = step[4];
         if (Math.abs(errorTicks) < 30) power = step[5];
+
 
         if (errorTicks < 0) outtakeRotationMotor.setPower(power);
         if (errorTicks > 0) outtakeRotationMotor.setPower(-power);
@@ -380,6 +389,32 @@ public class LancersRobot {
         outtakeMotor.setVelocity(velocity);
     }
 
+    public void setAdjustedOuttakeVelocity(){
+        adjustedVelocity = !adjustedVelocity;
+    }
+
+    public void autoAdjustOuttakeVelocity() { // teleop only
+        if (adjustedVelocity) {
+            if (odo.getPosY(DistanceUnit.INCH) < 48) { // far launching
+                outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, farShootingPIDF);
+                outtakeMotor.setVelocity(1240);
+                setServoPosition(0.8);
+            }
+            else if (odo.getPosY(DistanceUnit.INCH) >= 48) { // close launching
+                outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, closeShootingPIDF);
+                outtakeMotor.setVelocity(1260); // 1000-1020 in reality
+                setServoPosition(1);
+            }
+        }
+        else {
+            outtakeMotor.setVelocity(0);
+        }
+    }
+
+    public void setOuttakePIDF(PIDFCoefficients coefficients) {
+        outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, coefficients);
+    }
+
     public void setOuttakePower(double power) {
         outtakeMotor.setPower(power);
     }
@@ -394,7 +429,7 @@ public class LancersRobot {
         outtakeServo.setPosition(position);
     }
 
-    public void aimOuttakeToTx(double deadbandTx) {
+    public void aimOuttakeToTx(double deadbandTx) { // NO LONGER USING
         if (result != null && result.isValid()) {
             double tx = result.getTx();
             double multiplier;
@@ -410,6 +445,12 @@ public class LancersRobot {
         }
     }
 
+    public void setTurretMode() {
+        turretMode = !turretMode;
+        if(turretMode)outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, underShootingPIDF);
+        else outtakeMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, farShootingPIDF);
+    }
+
     private boolean setOriginalTime = false;
     private double originalTime;
 
@@ -417,6 +458,18 @@ public class LancersRobot {
         this.setOriginalTime = true;
         this.originalTime = System.currentTimeMillis();
 
+    }
+
+    public void relocalizeRobot() {
+        if (redMode) {
+            odo.setPosX(144-7.75, DistanceUnit.INCH);
+        }
+        else {
+            odo.setPosX(7.75, DistanceUnit.INCH);
+        }
+
+        odo.setPosY(7.86025, DistanceUnit.INCH);
+        odo.setHeading(90, AngleUnit.DEGREES);
     }
 
     public void aimReset() {
@@ -471,16 +524,18 @@ public class LancersRobot {
         //autoAdjustServo();
 
 
+        /*
         // For Teleop Only
         if (!autonMode) {
             if (redMode) {
                 //aimTurretToAngle(getAngleToRed(), 0.009, 1, 0.5);
-                aimTurretToAngle(getIntegratedAngle(true), 0.8, 5);
             } else {
                 //aimTurretToAngle(getAngleToBlue(), 0.009, 1, 0.5);
                 aimTurretToAngle(getIntegratedAngle(false), 0.8, 5);
             }
         }
+
+         */
 
         // For auton, run holdTurretAngle(degree, max_power) to keep the turret pointed at a certain angle relative to the robot
 
@@ -510,7 +565,6 @@ public class LancersRobot {
         }
          */
 
-        /*
         // INTAKE/OUTTAKE POWER/VEL TESTING
         telemetry.addData("Ticks per second", ticksPerSec);
         telemetry.addData("Target velocity", outtakeVelocity);
@@ -520,8 +574,6 @@ public class LancersRobot {
 
         //telemetry.addData("Servo position", servoPosition);
 
-
-         */
         telemetry.addData("Outtake rotation motor ticks", -outtakeRotationMotor.getCurrentPosition()-outtakeRotationMotorPosition);
 
         // position/pinpoint testing
@@ -543,6 +595,7 @@ public class LancersRobot {
 
         telemetry.addLine("----------------------------");
 
+        /*
         // limelight correction debug
         telemetry.addData("ll ty (raw)", llTy);
         telemetry.addData("ll base angle (odo only)", llBaseAngle);
@@ -552,6 +605,7 @@ public class LancersRobot {
 
         telemetry.addLine("----------------------------");
 
+         */
         telemetry.update();
     }
 

@@ -32,6 +32,14 @@ public class LancersTeleOpRed extends LinearOpMode {
                 robot.odo.setPosY(24, DistanceUnit.INCH);
                 robot.odo.setHeading(90, AngleUnit.DEGREES);
             }
+
+            if (robot.turretMode){
+                robot.aimTurretToAngle(robot.getIntegratedAngle(true), 0.8, 5);
+            }
+            else {
+                robot.holdTurretAngle(0, 0.6);
+            }
+
             controller.loop(gamepad1, gamepad2);
         }
     }
