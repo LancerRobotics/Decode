@@ -46,8 +46,8 @@ public class LancersRobot {
     public GoBildaPinpointDriver odo;
 
     // ---- VISION ----
-    private final Limelight3A limelight;
-    private final LimelightWrapper limelightWrapper;
+    public final Limelight3A limelight;
+    public final LimelightWrapper limelightWrapper;
     private LLResult result;
 
     // ---- TELEMETRY ----
