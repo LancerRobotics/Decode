@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.ftccommon.internal.manualcontrol.responses.ClosedLoopControlCoefficients;
+
 import org.firstinspires.ftc.teamcode.vision.LimelightWrapper;
 
 /**
@@ -23,6 +20,8 @@ public class LancersTeleOpController {
     private double outtakeVel = 0.0; // 0.0 or 1500.0 (ticks/sec, depending on your motor/SDK)\
     private double outtakePower = 0.0; // 0 or 1
     private double outtakeTwoPower = 0.0; // 0.0 or 0.5
+
+    private boolean outtakeTwoReversed = true; // starts reversed
 
     // Servo state: 0.0 or 0.5 (your “open/closed” positions)
     private double servoPos = 0;
@@ -101,7 +100,11 @@ public class LancersTeleOpController {
 
         robot.setIntake(intakeOn * intakeDirection);
 
+
+
         // OUTTAKE
+
+
         if (gamepad2.rightBumperWasPressed()) {
         //if (gamepad2.rightBumperWasPressed()) {
             //outtakeVel = (outtakeVel == 0.0) ? 1260 : 0.0;
@@ -110,9 +113,15 @@ public class LancersTeleOpController {
         }
 
         if (gamepad2.leftBumperWasPressed()) {
-        //if (gamepad2.leftBumperWasPressed()) {
-            outtakeTwoPower = (outtakeTwoPower == 0) ? 0.9 : 0;
+            if (outtakeTwoPower == 0) {
+                outtakeTwoPower = outtakeTwoReversed ? -0.9 : 0.9;
+            } else {
+                outtakeTwoReversed = !outtakeTwoReversed;
+                outtakeTwoPower = outtakeTwoReversed ? -0.9 : 0.9;
+            }
         }
+
+        robot.setOuttakeTwoPower(outtakeTwoPower);
 
 
 
